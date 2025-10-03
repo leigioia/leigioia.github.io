@@ -35,8 +35,8 @@
     .pub-title { font-weight: 600; }
     .pub-venue { font-style: italic; }
     .footer { margin-top: 2rem; font-size: .9rem; }
-    .avatar { width: 96px; height: 96px; border-radius: 14px; border: 1px solid var(--border); object-fit: cover; }
-    .top { display: grid; grid-template-columns: 96px 1fr; grid-gap: 1rem; align-items: center; }
+    .avatar { width: 120px; height: 120px; border-radius: 14px; border: 1px solid var(--border); object-fit: cover; }
+    .top { display: grid; grid-template-columns: 120px 1fr; grid-gap: 1rem; align-items: center; }
     .section { margin-bottom: 1.5rem; }
     .note { border-left: 3px solid var(--border); padding-left: .75rem; color: var(--muted); }
     .btn { display:inline-block; border:1px solid var(--border); padding:.5rem .75rem; border-radius:10px; text-decoration:none; }
@@ -63,10 +63,10 @@
     <aside class="sidebar">
       <div class="card">
         <div class="top">
-          <img src="avatar.jpg" alt="Portrait" class="avatar" onerror="this.style.display='none'" />
+          <img src="lei-gioia-yang.jpg" alt="Lei Gioia Yang headshot" class="avatar" />
           <div>
             <h1>Lei Gioia Yang</h1>
-            <div class="muted">Walter Burke Institute for Theoretical Physics, Caltech<br/>Pasadena, CA City, Country</div>
+            <div class="muted">Walter Burke Institute for Theoretical Physics, Caltech<br/>Pasadena, CA</div>
           </div>
         </div>
         <div class="section">
@@ -98,6 +98,7 @@
         <h2>About</h2>
         <p>
           I am a <em>postdoctoral fellow</em> at the California Institute of Technology. My work sits at the interface of quantum information and condensed matter theory, focusing on long‑range entanglement and constraints from symmetry and locality. Recent interests include quantum anomalies and crystalline responses in topological (semi)metals, finite‑depth circuit obstructions (e.g., non‑zero momentum ⇒ LRE), permutation‑invariant codes/W‑states, and exactly constrained lattice fermions.
+        </p>
         <p class="note">This is a minimal, fast site—no build step, just one HTML file—designed to work nicely with GitHub Pages.</p>
       </section>
 
@@ -173,10 +174,9 @@
         <p>CV: <a href="CV.pdf">CV.pdf</a></p>
         <p>Email: <span id="email"></span></p>
         <script>
-          // small email obfuscation
           (function(){
-            const u = "firstname.lastname"; // change to your handle
-            const d = "institution.edu";   // change domain
+            const u = "leigioia"; // example username
+            const d = "caltech.edu";   // domain
             const el = document.getElementById('email');
             el.innerHTML = `<a href="mailto:${u}@${d}">${u}@${d}</a>`;
           })();
