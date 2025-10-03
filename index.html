@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lei Gioia Yang</title>
+  <meta name="description" content="Personal website of Lei Gioia Yang – research, publications, teaching, and notes." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff; --fg: #111111; --muted: #666; --link: #0a66c2; --card: #f7f7f8; --border: #e6e6e8;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #0b0c0f; --fg: #e9e9ef; --muted: #a3a3ad; --link: #61a8ff; --card: #13151b; --border: #232530; }
+    }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg); font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; line-height: 1.6; }
+    a { color: var(--link); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; display: grid; grid-template-columns: 220px 1fr; grid-gap: 2rem; }
+    header { grid-column: 1 / 3; display: flex; justify-content: space-between; align-items: center; margin-bottom: .5rem; }
+    nav a { margin-right: 1rem; font-weight: 500; }
+    .sidebar { position: sticky; top: 1.25rem; align-self: start; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1rem 1.25rem; }
+    h1 { font-size: clamp(1.6rem, 1.2rem + 2vw, 2.2rem); line-height: 1.2; margin: 0 0 .25rem; }
+    h2 { font-size: 1.25rem; margin: 1.75rem 0 .75rem; }
+    h3 { font-size: 1.05rem; margin: 1rem 0 .25rem; }
+    ul { padding-left: 1.2rem; }
+    .muted { color: var(--muted); }
+    .pill { display: inline-block; padding: .2rem .6rem; border: 1px solid var(--border); border-radius: 999px; font-size: .8rem; margin-right: .4rem; color: var(--muted); }
+    .list-plain { list-style: none; padding: 0; margin: 0; }
+    .list-plain li { margin-bottom: .75rem; }
+    .pub { margin-bottom: 1rem; }
+    .pub-title { font-weight: 600; }
+    .pub-venue { font-style: italic; }
+    .footer { margin-top: 2rem; font-size: .9rem; }
+    .avatar { width: 96px; height: 96px; border-radius: 14px; border: 1px solid var(--border); object-fit: cover; }
+    .top { display: grid; grid-template-columns: 96px 1fr; grid-gap: 1rem; align-items: center; }
+    .section { margin-bottom: 1.5rem; }
+    .note { border-left: 3px solid var(--border); padding-left: .75rem; color: var(--muted); }
+    .btn { display:inline-block; border:1px solid var(--border); padding:.5rem .75rem; border-radius:10px; text-decoration:none; }
+    .btn:hover { text-decoration:none; border-color: var(--link); }
+    @media (max-width: 830px) { .wrap { grid-template-columns: 1fr; } header { grid-column: 1; } .sidebar { position: static; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <strong><a href="#">Lei Gioia Yang</a></strong>
+        <span class="muted"> • Postdoctoral Fellow, Caltech</span>
+      </div>
+      <nav>
+        <a href="#research">Research</a>
+        <a href="#publications">Publications</a>
+        <a href="#notes">Notes</a>
+        <a href="#teaching">Teaching</a>
+        <a href="#contact">CV & Contact</a>
+      </nav>
+    </header>
+
+    <aside class="sidebar">
+      <div class="card">
+        <div class="top">
+          <img src="avatar.jpg" alt="Portrait" class="avatar" onerror="this.style.display='none'" />
+          <div>
+            <h1>Lei Gioia Yang</h1>
+            <div class="muted">Walter Burke Institute for Theoretical Physics, Caltech<br/>Pasadena, CA City, Country</div>
+          </div>
+        </div>
+        <div class="section">
+          <a class="btn" href="CV.pdf">Download CV</a>
+        </div>
+        <div class="section">
+          <div class="muted">Keywords</div>
+          <div style="margin-top:.4rem;">
+            <span class="pill">Long‑range entanglement</span>
+            <span class="pill">Anomalies</span>
+            <span class="pill">Topological semimetals</span>
+            <span class="pill">SPT/cSPT</span>
+            <span class="pill">Quantum circuits</span>
+          </div>
+        </div>
+        <div class="section">
+          <div class="muted">Elsewhere</div>
+          <ul class="list-plain" style="margin-top:.5rem;">
+            <li>Google Scholar: <a href="https://scholar.google.ca/citations?hl=en&user=ozky2WYAAAAJ">Profile</a></li>
+            <li>arXiv: <a href="https://arxiv.org/search/?searchtype=author&query=Gioia%2C+L">author search</a></li>
+            <li>GitHub: <a href="https://github.com/">(optional)</a></li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+
+    <main>
+      <section id="about" class="card">
+        <h2>About</h2>
+        <p>
+          I am a <em>postdoctoral fellow</em> at the California Institute of Technology. My work sits at the interface of quantum information and condensed matter theory, focusing on long‑range entanglement and constraints from symmetry and locality. Recent interests include quantum anomalies and crystalline responses in topological (semi)metals, finite‑depth circuit obstructions (e.g., non‑zero momentum ⇒ LRE), permutation‑invariant codes/W‑states, and exactly constrained lattice fermions.
+        <p class="note">This is a minimal, fast site—no build step, just one HTML file—designed to work nicely with GitHub Pages.</p>
+      </section>
+
+      <section id="research" class="card">
+        <h2>Research</h2>
+        <ul>
+          <li><strong>Symmetry, circuits, and phases:</strong> Constraints from locality and symmetry on finite‑depth circuit preparation; momentum‑carrying states and LRE; LSM‑type consequences.</li>
+          <li><strong>Topological semimetals:</strong> Quantum anomalies, crystalline responses, and interaction‑enabled phases (Dirac/Weyl systems).</li>
+          <li><strong>Codes & invariant subspaces:</strong> Permutation‑invariant codes (Dicke/W), robustness, and connections to circuit lower bounds.</li>
+        </ul>
+      </section>
+
+      <section id="publications" class="card">
+        <h2>Selected Publications</h2>
+        <div class="pub">
+          <div class="pub-title"><a href="https://link.aps.org/doi/10.1103/PhysRevX.12.031007">Nonzero Momentum Requires Long‑Range Entanglement</a></div>
+          <div class="pub-venue">PRX • 2022</div>
+          <div class="muted">with Chong Wang</div>
+        </div>
+        <div class="pub">
+          <div class="pub-title"><a href="https://arxiv.org/abs/2310.10716">W state is not the unique ground state of any local Hamiltonian</a></div>
+          <div class="pub-venue">arXiv • 2023 (v2 2024)</div>
+          <div class="muted">with Ryan Thorngren</div>
+        </div>
+        <div class="pub">
+          <div class="pub-title"><a href="https://link.aps.org/doi/10.1103/PhysRevLett.124.096603">Fractional Quantum Hall Effect in Weyl Semimetals</a></div>
+          <div class="pub-venue">PRL • 2020</div>
+          <div class="muted">with Chong Wang, A. A. Burkov</div>
+        </div>
+        <div class="pub">
+          <div class="pub-title"><a href="https://link.aps.org/doi/10.1103/PhysRevResearch.3.043067">Unquantized anomalies in topological semimetals</a></div>
+          <div class="pub-venue">Phys. Rev. Research • 2021</div>
+          <div class="muted">with Chong Wang, A. A. Burkov</div>
+        </div>
+        <div class="pub">
+          <div class="pub-title"><a href="https://link.aps.org/doi/10.1103/PhysRevB.110.155110">Crystalline axion electrodynamics in charge‑ordered Dirac semimetals</a></div>
+          <div class="pub-venue">PRB • 2024</div>
+          <div class="muted">with Julian May‑Mann, Mark R. Hirsbrunner, Taylor L. Hughes</div>
+        </div>
+        <div class="pub">
+          <div class="pub-title"><a href="#">Exact Chiral Symmetries of 3+1D Hamiltonian Lattice Fermions</a></div>
+          <div class="pub-venue">preprint • 2025</div>
+          <div class="muted">with Ryan Thorngren</div>
+        </div>
+        <p class="muted">Full list: <a href="https://scholar.google.ca/citations?hl=en&user=ozky2WYAAAAJ">Google Scholar</a> • Selected preprints on <a href="https://arxiv.org/search/?searchtype=author&query=Gioia%2C+L">arXiv</a>.</p>
+      </section>
+
+      <section id="notes" class="card">
+        <h2>Notes & Posts</h2>
+        <ul class="list-plain">
+          <li>
+            <a href="notes/w-state-notes.html">Notes on W states and permutation codes</a>
+            <span class="muted"> — Jan 2025</span>
+          </li>
+          <li>
+            <a href="notes/lre-sre-lightcone.html">Lightcone arguments for symmetry fractionalization</a>
+            <span class="muted"> — Dec 2024</span>
+          </li>
+        </ul>
+        <p class="note">You can make a <code>notes/</code> folder and drop simple HTML or Markdown-converted pages there.</p>
+      </section>
+
+      <section id="teaching" class="card">
+        <h2>Teaching</h2>
+        <ul>
+          <li>Course/TA • Term — short description or link to syllabus.</li>
+          <li>Seminar series — link to schedule or slides.</li>
+        </ul>
+      </section>
+
+      <section id="contact" class="card">
+        <h2>CV & Contact</h2>
+        <p>CV: <a href="CV.pdf">CV.pdf</a></p>
+        <p>Email: <span id="email"></span></p>
+        <script>
+          // small email obfuscation
+          (function(){
+            const u = "firstname.lastname"; // change to your handle
+            const d = "institution.edu";   // change domain
+            const el = document.getElementById('email');
+            el.innerHTML = `<a href="mailto:${u}@${d}">${u}@${d}</a>`;
+          })();
+        </script>
+      </section>
+
+      <div class="footer muted">© <span id="year"></span> Lei Gioia Yang • Built with plain HTML/CSS on GitHub Pages.</div>
+      <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+    </main>
+  </div>
+</body>
+</html>
