@@ -18,7 +18,7 @@
     html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg); font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; line-height: 1.6; }
     a { color: var(--link); text-decoration: none; }
     a:hover { text-decoration: underline; }
-    .wrap { max-width: 900px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; display: grid; grid-template-columns: 220px 1fr; grid-gap: 2rem; }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; display: grid; grid-template-columns: 280px 1fr; grid-gap: 2rem; }
     header { grid-column: 1 / 3; display: flex; justify-content: space-between; align-items: center; margin-bottom: .5rem; }
     nav a { margin-right: 1rem; font-weight: 500; }
     .sidebar { position: sticky; top: 1.25rem; align-self: start; }
@@ -35,8 +35,8 @@
     .pub-title { font-weight: 600; }
     .pub-venue { font-style: italic; }
     .footer { margin-top: 2rem; font-size: .9rem; }
-    .avatar { width: 120px; height: 120px; border-radius: 14px; border: 1px solid var(--border); object-fit: cover; }
-    .top { display: grid; grid-template-columns: 120px 1fr; grid-gap: 1rem; align-items: center; }
+    .avatar { width: 160px; height: 160px; border-radius: 14px; border: 1px solid var(--border); object-fit: cover; display:block; margin:0 auto; }
+    .top { display: block; text-align: center; }
     .section { margin-bottom: 1.5rem; }
     .note { border-left: 3px solid var(--border); padding-left: .75rem; color: var(--muted); }
     .btn { display:inline-block; border:1px solid var(--border); padding:.5rem .75rem; border-radius:10px; text-decoration:none; }
@@ -64,10 +64,8 @@
       <div class="card">
         <div class="top">
           <img src="lei-gioia-yang.jpg" alt="Lei Gioia Yang headshot" class="avatar" />
-          <div>
-            <h1>Lei Gioia Yang</h1>
-            <div class="muted">Walter Burke Institute for Theoretical Physics, Caltech<br/>Pasadena, CA</div>
-          </div>
+          <h1>Lei Gioia Yang</h1>
+          <div class="muted">Walter Burke Institute for Theoretical Physics, Caltech<br/>Pasadena, CA</div>
         </div>
         <div class="section">
           <a class="btn" href="CV.pdf">Download CV</a>
@@ -175,7 +173,7 @@
         <p>Email: <span id="email"></span></p>
         <script>
           (function(){
-            const u = "leigioia"; // example username
+            const u = "lei"; // example username
             const d = "caltech.edu";   // domain
             const el = document.getElementById('email');
             el.innerHTML = `<a href="mailto:${u}@${d}">${u}@${d}</a>`;
