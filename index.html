@@ -3,187 +3,1004 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Lei Gioia Yang</title>
-  <meta name="description" content="Personal website of Lei Gioia Yang – research, publications, teaching, and notes." />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta name="author" content="Lei Gioia Yang" />
+  <meta
+    name="description"
+    content="Lei Gioia Yang is a theoretical physicist working on quantum matter, quantum information, mathematical physics, entanglement, quantum anomalies, many-body scars, and topological semimetals."
+  />
+  <meta name="theme-color" content="#315f38" />
+  <title>Lei Gioia Yang | Theoretical Physics</title>
+
   <style>
     :root {
-      --bg: #ffffff; --fg: #111111; --muted: #666; --link: #0a66c2; --card: #f7f7f8; --border: #e6e6e8;
+      color-scheme: light dark;
+      --bg: #fbfcfa;
+      --surface: #ffffff;
+      --surface-soft: #f2f5f1;
+      --text: #172019;
+      --muted: #5e695f;
+      --accent: #315f38;
+      --accent-hover: #24492a;
+      --border: #dce4dc;
+      --shadow: 0 12px 34px rgba(24, 51, 29, 0.07);
+      --radius: 18px;
+      --max-width: 1120px;
     }
+
     @media (prefers-color-scheme: dark) {
-      :root { --bg: #0b0c0f; --fg: #e9e9ef; --muted: #a3a3ad; --link: #61a8ff; --card: #13151b; --border: #232530; }
+      :root {
+        --bg: #0d120e;
+        --surface: #141b15;
+        --surface-soft: #19231b;
+        --text: #edf3ed;
+        --muted: #aeb9af;
+        --accent: #8fc697;
+        --accent-hover: #b1ddb7;
+        --border: #2d3a2f;
+        --shadow: none;
+      }
     }
-    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg); font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; line-height: 1.6; }
-    a { color: var(--link); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    .wrap { max-width: 900px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; display: grid; grid-template-columns: 300px 1fr; grid-gap: 2rem; }
-    header { grid-column: 1 / 3; display: flex; justify-content: space-between; align-items: center; margin-bottom: .5rem; }
-    nav a { margin-right: 1rem; font-weight: 500; }
-    .sidebar { position: sticky; top: 1.25rem; align-self: start; }
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1rem 1.25rem; }
-    h1 { font-size: clamp(1.6rem, 1.2rem + 2vw, 2.2rem); line-height: 1.2; margin: 0 0 .25rem; }
-    h2 { font-size: 1.25rem; margin: 1.75rem 0 .75rem; }
-    h3 { font-size: 1.05rem; margin: 1rem 0 .25rem; }
-    ul { padding-left: 1.2rem; }
-    .muted { color: var(--muted); }
-    .pill { display: inline-block; padding: .2rem .6rem; border: 1px solid var(--border); border-radius: 999px; font-size: .8rem; margin-right: .4rem; color: var(--muted); }
-    .list-plain { list-style: none; padding: 0; margin: 0; }
-    .list-plain li { margin-bottom: .75rem; }
-    .pub { margin-bottom: 1rem; }
-    .pub-title { font-weight: 600; }
-    .pub-venue { font-style: italic; }
-    .footer { margin-top: 2rem; font-size: .9rem; }
-    .avatar { width: 160px; height: 160px; border-radius: 14px; border: 1px solid var(--border); object-fit: cover; display:block; margin:0 auto; }
-    .top { display: block; text-align: center; }
-    .section { margin-bottom: 1.5rem; }
-    .note { border-left: 3px solid var(--border); padding-left: .75rem; color: var(--muted); }
-    .btn { display:inline-block; border:1px solid var(--border); padding:.5rem .75rem; border-radius:10px; text-decoration:none; }
-    .btn:hover { text-decoration:none; border-color: var(--link); }
-    @media (max-width: 830px) { .wrap { grid-template-columns: 1fr; } header { grid-column: 1; } .sidebar { position: static; } }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.18em;
+    }
+
+    a:hover,
+    a:focus-visible {
+      color: var(--accent-hover);
+    }
+
+    .skip-link {
+      position: fixed;
+      top: 0.75rem;
+      left: 0.75rem;
+      z-index: 100;
+      transform: translateY(-180%);
+      padding: 0.55rem 0.8rem;
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    .page {
+      width: min(var(--max-width), calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 1.5rem 0 4rem;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 2rem;
+    }
+
+    .site-header {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.25rem;
+      min-height: 56px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .site-title {
+      color: var(--text);
+      font-weight: 750;
+      text-decoration: none;
+      letter-spacing: -0.01em;
+    }
+
+    .site-title:hover {
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .site-nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 0.25rem 1rem;
+      font-size: 0.94rem;
+    }
+
+    .site-nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .site-nav a:hover,
+    .site-nav a:focus-visible {
+      color: var(--accent);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 1.25rem;
+      align-self: start;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .profile-card {
+      padding: 1.35rem;
+    }
+
+    .avatar-frame {
+      width: 168px;
+      height: 168px;
+      margin: 0 auto 1rem;
+      border-radius: 22px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--surface-soft);
+    }
+
+    .avatar {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .avatar-fallback {
+      display: none;
+      width: 100%;
+      height: 100%;
+      place-items: center;
+      font-size: 2rem;
+      font-weight: 750;
+      letter-spacing: 0.04em;
+      color: var(--accent);
+    }
+
+    h1,
+    h2,
+    h3 {
+      line-height: 1.25;
+      letter-spacing: -0.02em;
+    }
+
+    h1 {
+      margin: 0;
+      text-align: center;
+      font-size: clamp(1.65rem, 4vw, 2.05rem);
+    }
+
+    h2 {
+      margin: 0 0 1rem;
+      font-size: clamp(1.25rem, 3vw, 1.55rem);
+    }
+
+    h3 {
+      margin: 1.25rem 0 0.45rem;
+      font-size: 1.04rem;
+    }
+
+    p {
+      margin: 0 0 1rem;
+    }
+
+    .profile-role,
+    .profile-location {
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .profile-role {
+      margin: 0.45rem 0 0.2rem;
+      font-weight: 600;
+    }
+
+    .profile-location {
+      margin-bottom: 1rem;
+      font-size: 0.92rem;
+    }
+
+    .incoming {
+      margin: 0 0 1rem;
+      padding: 0.75rem 0.8rem;
+      background: var(--surface-soft);
+      border-radius: 12px;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin: 0 0 1.15rem;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0.55rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 650;
+      font-size: 0.92rem;
+    }
+
+    .button:hover,
+    .button:focus-visible {
+      border-color: var(--accent);
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .button.primary {
+      flex: 1 1 100%;
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+    }
+
+    .button.primary:hover,
+    .button.primary:focus-visible {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+      color: #ffffff;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .button.primary {
+        color: #0d120e;
+      }
+
+      .button.primary:hover,
+      .button.primary:focus-visible {
+        color: #0d120e;
+      }
+    }
+
+    .profile-section {
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .profile-section + .profile-section {
+      margin-top: 1rem;
+    }
+
+    .eyebrow {
+      margin-bottom: 0.55rem;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 750;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.42rem;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 0.22rem 0.55rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.35;
+    }
+
+    .profile-links {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 0.42rem;
+      font-size: 0.92rem;
+    }
+
+    main {
+      min-width: 0;
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    .content-card {
+      padding: clamp(1.25rem, 3vw, 1.8rem);
+      scroll-margin-top: 1.25rem;
+    }
+
+    .lead {
+      font-size: 1.08rem;
+    }
+
+    .muted,
+    .meta {
+      color: var(--muted);
+    }
+
+    .meta {
+      font-size: 0.9rem;
+    }
+
+    .appointment-grid,
+    .two-column {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.9rem;
+      margin-top: 1.25rem;
+    }
+
+    .compact-box {
+      padding: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface-soft);
+    }
+
+    .compact-box p:last-child,
+    .compact-box ul:last-child {
+      margin-bottom: 0;
+    }
+
+    .year-label {
+      display: block;
+      margin-bottom: 0.15rem;
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .research-list,
+    .timeline,
+    .plain-list {
+      margin: 0;
+      padding-left: 1.25rem;
+    }
+
+    .research-list li,
+    .plain-list li {
+      margin-bottom: 0.75rem;
+    }
+
+    .research-list li:last-child,
+    .plain-list li:last-child {
+      margin-bottom: 0;
+    }
+
+    .publication-note {
+      margin-bottom: 1.15rem;
+      padding: 0.8rem 0.95rem;
+      border-left: 3px solid var(--accent);
+      background: var(--surface-soft);
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .publication-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      counter-reset: publications;
+    }
+
+    .publication {
+      position: relative;
+      padding: 0 0 1.05rem 2.35rem;
+      margin-bottom: 1.05rem;
+      border-bottom: 1px solid var(--border);
+      counter-increment: publications;
+    }
+
+    .publication:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .publication::before {
+      content: counter(publications);
+      position: absolute;
+      top: 0.05rem;
+      left: 0;
+      width: 1.6rem;
+      height: 1.6rem;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background: var(--surface-soft);
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 750;
+    }
+
+    .publication-title {
+      margin: 0 0 0.25rem;
+      font-weight: 750;
+      line-height: 1.4;
+    }
+
+    .publication-title a {
+      text-decoration: none;
+    }
+
+    .publication-title a:hover,
+    .publication-title a:focus-visible {
+      text-decoration: underline;
+    }
+
+    .authors,
+    .venue {
+      margin: 0;
+      font-size: 0.93rem;
+    }
+
+    .authors {
+      color: var(--muted);
+    }
+
+    .venue {
+      margin-top: 0.16rem;
+      font-style: italic;
+    }
+
+    .me {
+      color: var(--text);
+      font-weight: 750;
+    }
+
+    details {
+      margin-top: 1.25rem;
+      border-top: 1px solid var(--border);
+      padding-top: 1rem;
+    }
+
+    summary {
+      cursor: pointer;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .timeline {
+      list-style: none;
+      padding: 0;
+    }
+
+    .timeline li {
+      display: grid;
+      grid-template-columns: 78px minmax(0, 1fr);
+      gap: 0.8rem;
+      padding: 0.65rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .timeline li:last-child {
+      border-bottom: 0;
+    }
+
+    .timeline time {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.75rem;
+    }
+
+    .contact-item {
+      padding: 0.85rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .contact-item strong {
+      display: block;
+      margin-bottom: 0.2rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .footer {
+      color: var(--muted);
+      font-size: 0.88rem;
+      text-align: center;
+      padding-top: 0.5rem;
+    }
+
+    @media (max-width: 860px) {
+      .page {
+        grid-template-columns: 1fr;
+      }
+
+      .site-header {
+        grid-column: 1;
+      }
+
+      .sidebar {
+        position: static;
+      }
+
+      .profile-card {
+        display: grid;
+        grid-template-columns: 150px minmax(0, 1fr);
+        column-gap: 1.25rem;
+        align-items: start;
+      }
+
+      .profile-card > * {
+        grid-column: 2;
+      }
+
+      .avatar-frame {
+        grid-column: 1;
+        grid-row: 1 / span 8;
+        width: 150px;
+        height: 150px;
+        margin: 0;
+      }
+
+      h1,
+      .profile-role,
+      .profile-location,
+      .incoming {
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        width: min(100% - 1.15rem, var(--max-width));
+        padding-top: 0.7rem;
+        gap: 1rem;
+      }
+
+      .site-header {
+        align-items: flex-start;
+        flex-direction: column;
+        padding-bottom: 0.75rem;
+      }
+
+      .site-nav {
+        justify-content: flex-start;
+        gap: 0.35rem 0.8rem;
+      }
+
+      .profile-card {
+        display: block;
+      }
+
+      .avatar-frame {
+        width: 150px;
+        height: 150px;
+        margin: 0 auto 1rem;
+      }
+
+      h1,
+      .profile-role,
+      .profile-location,
+      .incoming {
+        text-align: center;
+      }
+
+      .appointment-grid,
+      .two-column,
+      .contact-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .timeline li {
+        grid-template-columns: 62px minmax(0, 1fr);
+      }
+
+      .publication {
+        padding-left: 2rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+    }
   </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <header>
-      <div>
-        <strong><a href="#">Lei Gioia Yang</a></strong>
-        <span class="muted"> • Postdoctoral Fellow, Caltech</span>
-      </div>
-      <nav>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <div class="page">
+    <header class="site-header">
+      <a class="site-title" href="#top">Lei Gioia Yang</a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="#about">About</a>
         <a href="#research">Research</a>
         <a href="#publications">Publications</a>
-        <a href="#notes">Notes</a>
-        <a href="#teaching">Teaching</a>
-        <a href="#contact">CV & Contact</a>
+        <a href="#experience">Experience</a>
+        <a href="#contact">Contact</a>
       </nav>
     </header>
 
-    <aside class="sidebar">
-      <div class="card">
-        <div class="top">
-          <img src="lei-gioia-yang.jpg" alt="Lei Gioia Yang headshot" class="avatar" />
-          <h1>Lei Gioia Yang</h1>
-          <div class="muted">Walter Burke Institute for Theoretical Physics, Caltech<br/>Pasadena, CA</div>
+    <aside class="sidebar" id="top">
+      <section class="card profile-card" aria-label="Profile">
+        <div class="avatar-frame">
+          <img
+            class="avatar"
+            src="lei-gioia-yang.jpg"
+            alt="Portrait of Lei Gioia Yang"
+            onerror="this.style.display='none'; document.getElementById('avatar-fallback').style.display='grid';"
+          />
+          <div class="avatar-fallback" id="avatar-fallback" aria-hidden="true">LGY</div>
         </div>
-        <div class="section">
-          <a class="btn" href="CV.pdf">Download CV</a>
+
+        <h1>Lei Gioia Yang</h1>
+        <p class="profile-role">Burke Postdoctoral Fellow<br />California Institute of Technology</p>
+        <p class="profile-location">Pasadena, California, USA</p>
+
+        <p class="incoming">
+          <strong>Incoming Assistant Professor</strong><br />
+          Tufts University, 2027
+        </p>
+
+        <div class="button-row">
+          <a class="button primary" href="CV_Lei_Gioia_Yang.pdf">Curriculum vitae (PDF)</a>
+          <a class="button" href="#publications">Publications</a>
+          <a class="button" href="#contact">Email</a>
         </div>
-        <div class="section">
-          <div class="muted">Keywords</div>
-          <div style="margin-top:.4rem;">
-            <span class="pill">Long‑range entanglement</span>
-            <span class="pill">Anomalies</span>
-            <span class="pill">Topological semimetals</span>
-            <span class="pill">SPT/cSPT</span>
-            <span class="pill">Quantum circuits</span>
+
+        <div class="profile-section">
+          <div class="eyebrow">Research areas</div>
+          <div class="tag-list">
+            <span class="tag">Quantum matter</span>
+            <span class="tag">Quantum information</span>
+            <span class="tag">Mathematical physics</span>
+            <span class="tag">Entanglement</span>
+            <span class="tag">Quantum anomalies</span>
+            <span class="tag">Many-body scars</span>
+            <span class="tag">Topological semimetals</span>
+            <span class="tag">Quantum circuits</span>
           </div>
         </div>
-        <div class="section">
-          <div class="muted">Elsewhere</div>
-          <ul class="list-plain" style="margin-top:.5rem;">
-            <li>Google Scholar: <a href="https://scholar.google.ca/citations?hl=en&user=ozky2WYAAAAJ">Profile</a></li>
-            <li>arXiv: <a href="https://arxiv.org/search/?searchtype=author&query=Gioia%2C+L">author search</a></li>
-            <li>GitHub: <a href="https://github.com/">(optional)</a></li>
+
+        <div class="profile-section">
+          <div class="eyebrow">Profiles</div>
+          <ul class="profile-links">
+            <li><a href="https://scholar.google.ca/citations?hl=en&amp;user=ozky2WYAAAAJ">Google Scholar</a></li>
+            <li><a href="https://arxiv.org/search/cond-mat?searchtype=author&amp;query=Gioia,+L">arXiv</a></li>
+            <li><a href="https://orcid.org/0000-0002-4367-4801">ORCID</a></li>
+            <li><a href="https://inspirehep.net/authors/1741532">INSPIRE-HEP</a></li>
           </ul>
         </div>
-      </div>
+      </section>
     </aside>
 
-    <main>
-      <section id="about" class="card">
+    <main id="main-content">
+      <section class="card content-card" id="about">
         <h2>About</h2>
-        <p>
-          I am a <em>postdoctoral fellow</em> at the California Institute of Technology. My work sits at the interface of quantum information and condensed matter theory, focusing on long‑range entanglement and constraints from symmetry and locality. Recent interests include quantum anomalies and crystalline responses in topological (semi)metals, finite‑depth circuit obstructions (e.g., non‑zero momentum ⇒ LRE), permutation‑invariant codes/W‑states, and exactly constrained lattice fermions.
+        <p class="lead">
+          I am a theoretical physicist working at the interface of quantum matter,
+          quantum information, and mathematical physics.
         </p>
-        <p class="note">This is a minimal, fast site—no build step, just one HTML file—designed to work nicely with GitHub Pages.</p>
+        <p>
+          My research asks how symmetry, locality, and interactions constrain quantum
+          states and Hamiltonians. Current interests include long-range entanglement,
+          quantum circuit lower bounds and state preparation, quantum many-body scars,
+          quantum anomalies, topological semimetals, chiral fermions, crystalline
+          defects, and quantum simulation.
+        </p>
+
+        <div class="appointment-grid" aria-label="Current and future appointments">
+          <div class="compact-box">
+            <span class="year-label">2023-present</span>
+            <strong>Burke Postdoctoral Fellow</strong><br />
+            Sherman Fairchild Postdoctoral Scholar Research Associate in Theoretical Physics<br />
+            <span class="muted">California Institute of Technology</span>
+          </div>
+          <div class="compact-box">
+            <span class="year-label">Beginning 2027</span>
+            <strong>Assistant Professor</strong><br />
+            Department of Physics and Astronomy<br />
+            <span class="muted">Tufts University</span>
+          </div>
+        </div>
       </section>
 
-      <section id="research" class="card">
+      <section class="card content-card" id="research">
         <h2>Research</h2>
-        <ul>
-          <li><strong>Symmetry, circuits, and phases:</strong> Constraints from locality and symmetry on finite‑depth circuit preparation; momentum‑carrying states and LRE; LSM‑type consequences.</li>
-          <li><strong>Topological semimetals:</strong> Quantum anomalies, crystalline responses, and interaction‑enabled phases (Dirac/Weyl systems).</li>
-          <li><strong>Codes & invariant subspaces:</strong> Permutation‑invariant codes (Dicke/W), robustness, and connections to circuit lower bounds.</li>
-        </ul>
-      </section>
-
-      <section id="publications" class="card">
-        <h2>Selected Publications</h2>
-        <div class="pub">
-          <div class="pub-title"><a href="https://link.aps.org/doi/10.1103/PhysRevX.12.031007">Nonzero Momentum Requires Long‑Range Entanglement</a></div>
-          <div class="pub-venue">PRX • 2022</div>
-          <div class="muted">with Chong Wang</div>
-        </div>
-        <div class="pub">
-          <div class="pub-title"><a href="https://arxiv.org/abs/2310.10716">W state is not the unique ground state of any local Hamiltonian</a></div>
-          <div class="pub-venue">arXiv • 2023 (v2 2024)</div>
-          <div class="muted">with Ryan Thorngren</div>
-        </div>
-        <div class="pub">
-          <div class="pub-title"><a href="https://link.aps.org/doi/10.1103/PhysRevLett.124.096603">Fractional Quantum Hall Effect in Weyl Semimetals</a></div>
-          <div class="pub-venue">PRL • 2020</div>
-          <div class="muted">with Chong Wang, A. A. Burkov</div>
-        </div>
-        <div class="pub">
-          <div class="pub-title"><a href="https://link.aps.org/doi/10.1103/PhysRevResearch.3.043067">Unquantized anomalies in topological semimetals</a></div>
-          <div class="pub-venue">Phys. Rev. Research • 2021</div>
-          <div class="muted">with Chong Wang, A. A. Burkov</div>
-        </div>
-        <div class="pub">
-          <div class="pub-title"><a href="https://link.aps.org/doi/10.1103/PhysRevB.110.155110">Crystalline axion electrodynamics in charge‑ordered Dirac semimetals</a></div>
-          <div class="pub-venue">PRB • 2024</div>
-          <div class="muted">with Julian May‑Mann, Mark R. Hirsbrunner, Taylor L. Hughes</div>
-        </div>
-        <div class="pub">
-          <div class="pub-title"><a href="#">Exact Chiral Symmetries of 3+1D Hamiltonian Lattice Fermions</a></div>
-          <div class="pub-venue">preprint • 2025</div>
-          <div class="muted">with Ryan Thorngren</div>
-        </div>
-        <p class="muted">Full list: <a href="https://scholar.google.ca/citations?hl=en&user=ozky2WYAAAAJ">Google Scholar</a> • Selected preprints on <a href="https://arxiv.org/search/?searchtype=author&query=Gioia%2C+L">arXiv</a>.</p>
-      </section>
-
-      <section id="notes" class="card">
-        <h2>Notes & Posts</h2>
-        <ul class="list-plain">
+        <ul class="research-list">
           <li>
-            <a href="notes/w-state-notes.html">Notes on W states and permutation codes</a>
-            <span class="muted"> — Jan 2025</span>
+            <strong>Symmetry, locality, and entanglement.</strong>
+            Constraints on quantum states imposed by translation symmetry, internal
+            symmetries, anomalies, and finite-depth quantum circuits.
           </li>
           <li>
-            <a href="notes/lre-sre-lightcone.html">Lightcone arguments for symmetry fractionalization</a>
-            <span class="muted"> — Dec 2024</span>
+            <strong>Quantum many-body states and Hamiltonians.</strong>
+            Parent Hamiltonians, quantum many-body scars, special invariant subspaces,
+            W states, and the relation between local dynamics and global structure.
+          </li>
+          <li>
+            <strong>Topological semimetals and lattice fermions.</strong>
+            Dirac and Weyl systems, chiral symmetries, crystalline responses and defects,
+            interaction effects, and anomaly-based no-go theorems.
+          </li>
+          <li>
+            <strong>Quantum state preparation and simulation.</strong>
+            Circuit lower bounds, efficient preparation protocols, and structural
+            questions at the boundary of condensed matter theory and quantum information.
           </li>
         </ul>
-        <p class="note">You can make a <code>notes/</code> folder and drop simple HTML or Markdown-converted pages there.</p>
       </section>
 
-      <section id="teaching" class="card">
-        <h2>Teaching</h2>
-        <ul>
-          <li>Course/TA • Term — short description or link to syllabus.</li>
-          <li>Seminar series — link to schedule or slides.</li>
-        </ul>
+      <section class="card content-card" id="publications">
+        <h2>Publications</h2>
+        <p class="publication-note">
+          Publications are listed in reverse chronological order. I publish under the
+          name <strong>Lei Gioia</strong>. Status information below follows my August 2026 CV.
+        </p>
+
+        <h3>Published or accepted</h3>
+        <ol class="publication-list">
+          <li class="publication">
+            <p class="publication-title">
+              <a href="https://journals.aps.org/prb/accepted/10.1103/g4h4-kb3c">
+                No-go theorem for single time-reversal invariant symmetry-protected Dirac fermions in 3+1d
+              </a>
+            </p>
+            <p class="authors"><span class="me">Lei Gioia</span>, Anton A. Burkov, and Taylor L. Hughes</p>
+            <p class="venue">Physical Review B, accepted (2026) · DOI: 10.1103/g4h4-kb3c</p>
+          </li>
+
+          <li class="publication">
+            <p class="publication-title">
+              <a href="https://journals.aps.org/prl/abstract/10.1103/s5q2-317m">
+                Exact Chiral Symmetries of 3+1D Hamiltonian Lattice Fermions
+              </a>
+            </p>
+            <p class="authors"><span class="me">Lei Gioia</span> and Ryan Thorngren</p>
+            <p class="venue">Physical Review Letters 136 (2026) · DOI: 10.1103/s5q2-317m</p>
+          </li>
+
+          <li class="publication">
+            <p class="publication-title">
+              <a href="https://journals.aps.org/prb/abstract/10.1103/PhysRevB.110.155110">
+                Crystalline axion electrodynamics in charge-ordered Dirac semimetals
+              </a>
+            </p>
+            <p class="authors">Julian May-Mann, Mark R. Hirsbrunner, <span class="me">Lei Gioia</span>, and Taylor L. Hughes</p>
+            <p class="venue">Physical Review B 110 (2024) · DOI: 10.1103/PhysRevB.110.155110</p>
+          </li>
+
+          <li class="publication">
+            <p class="publication-title">
+              <a href="https://journals.aps.org/prb/abstract/10.1103/PhysRevB.107.115147">
+                Topological order in interacting semimetals
+              </a>
+            </p>
+            <p class="authors">Jinmin Yi, Xuzhe Ying, <span class="me">Lei Gioia</span>, and A. A. Burkov</p>
+            <p class="venue">Physical Review B 107 (2023) · DOI: 10.1103/PhysRevB.107.115147</p>
+          </li>
+
+          <li class="publication">
+            <p class="publication-title">
+              <a href="https://journals.aps.org/prx/abstract/10.1103/PhysRevX.12.031007">
+                Non-zero momentum requires long-range entanglement
+              </a>
+            </p>
+            <p class="authors"><span class="me">Lei Gioia</span> and Chong Wang</p>
+            <p class="venue">Physical Review X 12 (2022) · DOI: 10.1103/PhysRevX.12.031007</p>
+          </li>
+
+          <li class="publication">
+            <p class="publication-title">
+              <a href="https://journals.aps.org/prresearch/abstract/10.1103/PhysRevResearch.3.043067">
+                Unquantized anomalies in topological semimetals
+              </a>
+            </p>
+            <p class="authors"><span class="me">Lei Gioia</span>, Chong Wang, and A. A. Burkov</p>
+            <p class="venue">Physical Review Research 3 (2021) · DOI: 10.1103/PhysRevResearch.3.043067</p>
+          </li>
+
+          <li class="publication">
+            <p class="publication-title">
+              <a href="https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.124.096603">
+                Fractional Quantum Hall Effect in Weyl Semimetals
+              </a>
+            </p>
+            <p class="authors">Chong Wang, <span class="me">Lei Gioia</span>, and A. A. Burkov</p>
+            <p class="venue">Physical Review Letters 124 (2020) · DOI: 10.1103/PhysRevLett.124.096603</p>
+          </li>
+
+          <li class="publication">
+            <p class="publication-title">
+              <a href="https://journals.aps.org/prb/abstract/10.1103/PhysRevB.100.205417">
+                Spherical topological insulator nanoparticles: Quantum size effects and optical transitions
+              </a>
+            </p>
+            <p class="authors"><span class="me">Lei Gioia</span>, M. G. Christie, U. Zülicke, M. Governale, and A. J. Sneyd</p>
+            <p class="venue">Physical Review B 100 (2019) · DOI: 10.1103/PhysRevB.100.205417</p>
+          </li>
+
+          <li class="publication">
+            <p class="publication-title">
+              <a href="https://journals.aps.org/prb/abstract/10.1103/PhysRevB.97.205421">
+                Dirac electrons in quantum rings
+              </a>
+            </p>
+            <p class="authors"><span class="me">Lei Gioia</span>, U. Zülicke, M. Governale, and R. Winkler</p>
+            <p class="venue">Physical Review B 97 (2018) · DOI: 10.1103/PhysRevB.97.205421</p>
+          </li>
+        </ol>
+
+        <details open>
+          <summary>Preprints</summary>
+          <ol class="publication-list" style="margin-top: 1rem">
+            <li class="publication">
+              <p class="publication-title">
+                <a href="https://arxiv.org/abs/2605.15200">
+                  Translation symmetry-enforced long-range entanglement in mixed states
+                </a>
+              </p>
+              <p class="authors">Ryan Thorngren, <span class="me">Lei Gioia</span>, and Carolyn Zhang</p>
+              <p class="venue">arXiv:2605.15200 (2026) · in review at Physical Review Letters</p>
+            </li>
+
+            <li class="publication">
+              <p class="publication-title">
+                <a href="https://arxiv.org/abs/2601.14206">
+                  Locality forces equal energy spacing of quantum many-body scar towers
+                </a>
+              </p>
+              <p class="authors">Nicholas O'Dea, <span class="me">Lei Gioia</span>, Sanjay Moudgalya, and Olexei I. Motrunich</p>
+              <p class="venue">arXiv:2601.14206 (2026) · in review at PRX Quantum</p>
+            </li>
+
+            <li class="publication">
+              <p class="publication-title">
+                <a href="https://arxiv.org/abs/2510.24713">
+                  Distinct Types of Parent Hamiltonians for Quantum States: Insights from the W State as a Quantum Many-Body Scar
+                </a>
+              </p>
+              <p class="authors"><span class="me">Lei Gioia</span>, Sanjay Moudgalya, and Olexei I. Motrunich</p>
+              <p class="venue">arXiv:2510.24713 (2025) · in review at Physical Review B</p>
+            </li>
+
+            <li class="publication">
+              <p class="publication-title">
+                <a href="https://arxiv.org/abs/2310.10716">
+                  W State is not the unique ground state of any local Hamiltonian
+                </a>
+              </p>
+              <p class="authors"><span class="me">Lei Gioia</span> and Ryan Thorngren</p>
+              <p class="venue">arXiv:2310.10716 (2023) · in review at Physical Review Letters</p>
+            </li>
+          </ol>
+        </details>
       </section>
 
-      <section id="contact" class="card">
-        <h2>CV & Contact</h2>
-        <p>CV: <a href="CV.pdf">CV.pdf</a></p>
-        <p>Email: <span id="email"></span></p>
-        <script>
-          (function(){
-            const u = "leigioia"; // example username
-            const d = "caltech.edu";   // domain
-            const el = document.getElementById('email');
-            el.innerHTML = `<a href="mailto:${u}@${d}">${u}@${d}</a>`;
-          })();
-        </script>
+      <section class="card content-card" id="experience">
+        <h2>Experience, awards, and service</h2>
+
+        <div class="two-column">
+          <div class="compact-box">
+            <h3 style="margin-top: 0">Education</h3>
+            <ul class="timeline">
+              <li><time>2023</time><span><strong>PhD in Physics</strong><br /><span class="muted">University of Waterloo &amp; Perimeter Institute</span></span></li>
+              <li><time>2018</time><span><strong>MSc in Physics</strong><br /><span class="muted">Perimeter Scholars International</span></span></li>
+              <li><time>2017</time><span><strong>MSc in Physics</strong><br /><span class="muted">Victoria University of Wellington</span></span></li>
+              <li><time>2015</time><span><strong>BSc (Hons) in Mathematics and Physics</strong><br /><span class="muted">Victoria University of Wellington</span></span></li>
+            </ul>
+          </div>
+
+          <div class="compact-box">
+            <h3 style="margin-top: 0">Selected awards</h3>
+            <ul class="plain-list">
+              <li><strong>Burke Postdoctoral Fellowship</strong>, Caltech (2023)</li>
+              <li><strong>KITP Graduate Fellowship</strong> (2023)</li>
+              <li><strong>Vanier Canada Graduate Scholarship</strong>, NSERC (2019)</li>
+              <li><strong>President's Graduate Scholarship</strong>, University of Waterloo (2019)</li>
+              <li><strong>Perimeter Scholars International Scholarship</strong> (2017)</li>
+            </ul>
+          </div>
+        </div>
+
+        <details>
+          <summary>Recent invited and workshop presentations</summary>
+          <ul class="timeline" style="margin-top: 0.75rem">
+            <li><time>2026</time><span>“Exact Chiral Symmetries of 3+1D Hamiltonian Lattice Fermions,” YITP: Frontiers of Lattice Fermions, Kyoto University</span></li>
+            <li><time>2026</time><span>“Renormalization, symmetries, and anomalies: Organizing principles for entangled quantum matter,” Tufts University physics colloquium</span></li>
+            <li><time>2026</time><span>“A window into quantum matter: the renormalization group view,” New York University physics colloquium</span></li>
+            <li><time>2025</time><span>“Exact chiral symmetries on the lattice,” MIT Lattice QCD blackboard talk</span></li>
+            <li><time>2025</time><span>“Distinct Types of Parent Hamiltonians for Quantum States,” Boston University condensed matter seminar</span></li>
+          </ul>
+        </details>
+
+        <details>
+          <summary>Teaching and academic service</summary>
+          <div class="two-column">
+            <div>
+              <h3>Teaching and supervision</h3>
+              <ul class="plain-list">
+                <li><strong>Research project supervisor</strong>, PSI Winter School (2022)</li>
+                <li><strong>Laboratory, tutorial, and outreach demonstrator</strong>, Victoria University of Wellington (2012-2017)</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Selected service</h3>
+              <ul class="plain-list">
+                <li><strong>Committee member</strong>, IQIM seminar series, Caltech (2025-present)</li>
+                <li><strong>Committee chair</strong>, PhD student committee, Perimeter Institute (2019-2021)</li>
+                <li><strong>Committee member</strong>, Internal Strategic Planning Committee, Perimeter Institute (2020-2021)</li>
+                <li><strong>Organizer</strong>, FemPhys mentoring event, Perimeter Institute (2019)</li>
+              </ul>
+            </div>
+          </div>
+        </details>
       </section>
 
-      <div class="footer muted">© <span id="year"></span> Lei Gioia Yang • Built with plain HTML/CSS on GitHub Pages.</div>
-      <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+      <section class="card content-card" id="contact">
+        <h2>Contact</h2>
+        <div class="contact-grid">
+          <div class="contact-item">
+            <strong>Email</strong>
+            <span id="email">Enable JavaScript to display the email address.</span>
+          </div>
+          <div class="contact-item">
+            <strong>Curriculum vitae</strong>
+            <a href="CV_Lei_Gioia_Yang.pdf">CV_Lei_Gioia_Yang.pdf</a>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        © <span id="year"></span> Lei Gioia Yang. Built as a single static HTML page for GitHub Pages.
+      </footer>
     </main>
   </div>
+
+  <script>
+    const emailUser = "lei.gioia.y";
+    const emailDomain = "gmail.com";
+    const emailAddress = `${emailUser}@${emailDomain}`;
+    document.getElementById("email").innerHTML =
+      `<a href="mailto:${emailAddress}">${emailAddress}</a>`;
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
