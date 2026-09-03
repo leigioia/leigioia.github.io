@@ -89,8 +89,8 @@
 
     /*
       Animated quail that crosses the lower landscape once every two minutes.
-      The page movement is not activated until the complete GIF file has loaded
-      and the visible image has decoded.
+      JavaScript prepares a fresh, fully loaded GIF element before every entrance;
+      the one-shot page crossing begins only after that element is ready.
     */
     .quail-walker {
       position: fixed;
@@ -99,6 +99,7 @@
       z-index: 0;
       width: var(--quail-size);
       aspect-ratio: 1 / 1;
+      visibility: hidden;
       opacity: 0;
       pointer-events: none;
       user-select: none;
@@ -108,7 +109,8 @@
     }
 
     .quail-walker.is-walking {
-      animation: quail-crossing 120s linear infinite;
+      visibility: visible;
+      animation: quail-crossing 120s linear 1 both;
     }
 
     .quail-gif {
@@ -760,9 +762,7 @@
 <body>
   <a class="skip-link" href="#main-content">Skip to main content</a>
 
-  <div class="quail-walker" id="quail-walker" aria-hidden="true">
-    <img class="quail-gif" id="quail-gif" alt="" />
-  </div>
+  <div class="quail-walker" id="quail-walker" aria-hidden="true"></div>
 
   <div class="page">
     <header class="site-header">
@@ -1133,50 +1133,150 @@
     document.getElementById("year").textContent = new Date().getFullYear();
 
     const quailWalker = document.getElementById("quail-walker");
-    const quailGif = document.getElementById("quail-gif");
     const quailGifUrl = "assets/quail-walk.gif";
 
     if (
       quailWalker &&
-      quailGif &&
       !window.matchMedia("(prefers-reduced-motion: reduce)").matches
     ) {
-      const beginCrossing = async () => {
-        try {
-          await quailGif.decode();
-        } catch {
-          // The load event below already confirms the GIF is available.
+      const FIRST_ENTRANCE_DELAY_MS = 1000;
+      let cycleNumber = 0;
+      let activeObjectUrl = null;
+      let gifBlob = null;
+      let crossingIsStarting = false;
+
+      const wait = (milliseconds) =>
+        new Promise((resolve) => window.setTimeout(resolve, milliseconds));
+
+      const pageLoadedAt = new Promise((resolve) => {
+        const markLoaded = () => resolve(performance.now());
+        if (document.readyState === "complete") {
+          markLoaded();
+        } else {
+          window.addEventListener("load", markLoaded, { once: true });
         }
+      });
 
-        requestAnimationFrame(() => {
-          quailWalker.classList.add("is-walking");
+      const waitForImage = (image) =>
+        new Promise((resolve, reject) => {
+          image.addEventListener("load", resolve, { once: true });
+          image.addEventListener(
+            "error",
+            () => reject(new Error("The quail GIF could not be loaded.")),
+            { once: true }
+          );
         });
-      };
-
-      const useLoadedGif = (source) => {
-        quailGif.addEventListener("load", beginCrossing, { once: true });
-        quailGif.src = source;
-      };
 
       /*
-        Fetching the file as a Blob guarantees that all GIF bytes have arrived
-        before the visible image is created. The horizontal crossing starts only
-        after that visible image fires load and finishes decoding.
+        The GIF is fetched once as a Blob, so all of its bytes are resident in
+        memory before any crossing. Immediately before each entrance, a fresh
+        object URL and detached <img> are loaded and decoded; inserting that new
+        element restarts GIF playback for that crossing.
       */
-      fetch(quailGifUrl, { cache: "force-cache" })
-        .then((response) => {
+      const loadGifBlob = async () => {
+        try {
+          const response = await fetch(quailGifUrl, { cache: "force-cache" });
           if (!response.ok) {
             throw new Error(`Unable to load quail GIF: ${response.status}`);
           }
-          return response.blob();
-        })
-        .then((gifBlob) => {
-          useLoadedGif(URL.createObjectURL(gifBlob));
-        })
-        .catch(() => {
-          // Fallback for local-file previews or browsers that block fetch here.
-          useLoadedGif(quailGifUrl);
-        });
+          return await response.blob();
+        } catch {
+          // Direct-URL fallback supports local-file previews where fetch is blocked.
+          return null;
+        }
+      };
+
+      const prepareGifForEntrance = async () => {
+        cycleNumber += 1;
+        const image = new Image();
+        image.className = "quail-gif";
+        image.alt = "";
+        image.decoding = "async";
+
+        const objectUrl = gifBlob ? URL.createObjectURL(gifBlob) : null;
+        const separator = quailGifUrl.includes("?") ? "&" : "?";
+        const source = objectUrl || `${quailGifUrl}${separator}cycle=${cycleNumber}`;
+
+        image.src = source;
+        await waitForImage(image);
+
+        try {
+          await image.decode();
+        } catch {
+          // The load event already establishes that the complete image is ready.
+        }
+
+        return { image, objectUrl };
+      };
+
+      const startPreparedCrossing = (preparedGif) => {
+        const previousObjectUrl = activeObjectUrl;
+
+        quailWalker.classList.remove("is-walking");
+        quailWalker.replaceChildren(preparedGif.image);
+        activeObjectUrl = preparedGif.objectUrl;
+
+        // Force the old one-shot animation to reset before beginning this cycle.
+        void quailWalker.offsetWidth;
+        quailWalker.classList.add("is-walking");
+
+        if (previousObjectUrl) {
+          URL.revokeObjectURL(previousObjectUrl);
+        }
+      };
+
+      /*
+        A fresh GIF is prepared immediately before every crossing. The quail
+        remains hidden until that new image has fired load and finished the
+        browser's available decode step, so the page motion can never outrun it.
+      */
+      const beginNextCrossing = async () => {
+        if (crossingIsStarting) {
+          return;
+        }
+
+        crossingIsStarting = true;
+        quailWalker.classList.remove("is-walking");
+
+        try {
+          const preparedGif = await prepareGifForEntrance();
+          startPreparedCrossing(preparedGif);
+        } catch (error) {
+          console.error(error);
+        } finally {
+          crossingIsStarting = false;
+        }
+      };
+
+      quailWalker.addEventListener("animationend", (event) => {
+        if (
+          event.target !== quailWalker ||
+          event.animationName !== "quail-crossing"
+        ) {
+          return;
+        }
+
+        beginNextCrossing();
+      });
+
+      const initializeQuail = async () => {
+        const [loadedAt, loadedGifBlob] = await Promise.all([
+          pageLoadedAt,
+          loadGifBlob(),
+        ]);
+        gifBlob = loadedGifBlob;
+
+        // The first entrance occurs no earlier than one second after page load.
+        const remainingDelay = Math.max(
+          0,
+          loadedAt + FIRST_ENTRANCE_DELAY_MS - performance.now()
+        );
+        await wait(remainingDelay);
+
+        await beginNextCrossing();
+      };
+
+      initializeQuail().catch((error) => console.error(error));
     }
   </script>
 </body>
