@@ -10,6 +10,7 @@
   />
   <meta name="theme-color" content="#315f38" />
   <title>Lei Gioia Yang | Theoretical Physics</title>
+  <link rel="preload" as="image" href="assets/quail-walk.gif" type="image/gif" />
 
   <style>
     :root {
@@ -86,23 +87,31 @@
       user-select: none;
     }
 
-    /* Animated quail that crosses the lower landscape once every two minutes. */
+    /*
+      Animated quail that crosses the lower landscape once every two minutes.
+      The page movement is not activated until the complete GIF file has loaded
+      and the visible image has decoded.
+    */
     .quail-walker {
       position: fixed;
       left: 0;
       bottom: var(--quail-bottom);
       z-index: 0;
       width: var(--quail-size);
-      opacity: var(--quail-opacity);
+      aspect-ratio: 1 / 1;
+      opacity: 0;
       pointer-events: none;
       user-select: none;
-      transform: translateX(-25vw);
+      transform: translateX(-60%);
       will-change: transform, opacity;
-      animation: quail-crossing 120s linear infinite;
       filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.12));
     }
 
-    .quail-walker img {
+    .quail-walker.is-walking {
+      animation: quail-crossing 120s linear infinite;
+    }
+
+    .quail-gif {
       display: block;
       width: 100%;
       height: auto;
@@ -110,19 +119,19 @@
 
     @keyframes quail-crossing {
       0% {
-        transform: translateX(-18vw);
+        transform: translateX(-60%);
         opacity: var(--quail-opacity);
       }
       54% {
-        transform: translateX(110vw);
+        transform: translateX(calc(100vw + 10%));
         opacity: var(--quail-opacity);
       }
       55.5% {
-        transform: translateX(110vw);
+        transform: translateX(calc(100vw + 10%));
         opacity: 0;
       }
       100% {
-        transform: translateX(110vw);
+        transform: translateX(calc(100vw + 10%));
         opacity: 0;
       }
     }
@@ -739,7 +748,8 @@
         scroll-behavior: auto;
       }
 
-      .quail-walker {
+      .quail-walker,
+      .quail-walker.is-walking {
         display: none;
         animation: none;
       }
@@ -750,8 +760,8 @@
 <body>
   <a class="skip-link" href="#main-content">Skip to main content</a>
 
-  <div class="quail-walker" aria-hidden="true">
-    <img id="quail-gif" src="assets/quail-walk.gif" data-base-src="assets/quail-walk.gif" alt="" />
+  <div class="quail-walker" id="quail-walker" aria-hidden="true">
+    <img class="quail-gif" id="quail-gif" alt="" />
   </div>
 
   <div class="page">
@@ -1122,16 +1132,51 @@
       `<a href="mailto:${emailAddress}">${emailAddress}</a>`;
     document.getElementById("year").textContent = new Date().getFullYear();
 
-    const quailWalker = document.querySelector(".quail-walker");
+    const quailWalker = document.getElementById("quail-walker");
     const quailGif = document.getElementById("quail-gif");
-    if (quailWalker && quailGif) {
-      const baseSrc = quailGif.dataset.baseSrc || "assets/quail-walk.gif";
-      const restartQuailGif = () => {
-        quailGif.src = `${baseSrc}?t=${Date.now()}`;
+    const quailGifUrl = "assets/quail-walk.gif";
+
+    if (
+      quailWalker &&
+      quailGif &&
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      const beginCrossing = async () => {
+        try {
+          await quailGif.decode();
+        } catch {
+          // The load event below already confirms the GIF is available.
+        }
+
+        requestAnimationFrame(() => {
+          quailWalker.classList.add("is-walking");
+        });
       };
 
-      restartQuailGif();
-      quailWalker.addEventListener("animationiteration", restartQuailGif);
+      const useLoadedGif = (source) => {
+        quailGif.addEventListener("load", beginCrossing, { once: true });
+        quailGif.src = source;
+      };
+
+      /*
+        Fetching the file as a Blob guarantees that all GIF bytes have arrived
+        before the visible image is created. The horizontal crossing starts only
+        after that visible image fires load and finishes decoding.
+      */
+      fetch(quailGifUrl, { cache: "force-cache" })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Unable to load quail GIF: ${response.status}`);
+          }
+          return response.blob();
+        })
+        .then((gifBlob) => {
+          useLoadedGif(URL.createObjectURL(gifBlob));
+        })
+        .catch(() => {
+          // Fallback for local-file previews or browsers that block fetch here.
+          useLoadedGif(quailGifUrl);
+        });
     }
   </script>
 </body>
