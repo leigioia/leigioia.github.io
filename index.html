@@ -28,6 +28,9 @@
       --max-width: 1120px;
       --landscape-opacity: 0.88;
       --landscape-width: min(92vw, 1180px);
+      --quail-size: clamp(84px, 8vw, 116px);
+      --quail-bottom: clamp(1.9rem, 4.5vw, 3.1rem);
+      --quail-opacity: 0.96;
     }
 
     @media (prefers-color-scheme: dark) {
@@ -73,7 +76,7 @@
       position: fixed;
       z-index: 0;
       left: 50%;
-      bottom: -0.35rem;
+      bottom: 1rem;
       width: var(--landscape-width);
       aspect-ratio: 1254 / 890;
       transform: translateX(-50%);
@@ -81,6 +84,50 @@
       opacity: var(--landscape-opacity);
       pointer-events: none;
       user-select: none;
+    }
+
+    /* Animated quail that crosses the lower landscape once every two minutes. */
+    .quail-walker {
+      position: fixed;
+      left: 0;
+      bottom: var(--quail-bottom);
+      z-index: 0;
+      width: var(--quail-size);
+      opacity: var(--quail-opacity);
+      pointer-events: none;
+      user-select: none;
+      transform: translateX(-25vw);
+      will-change: transform, opacity;
+      animation: quail-crossing 120s linear infinite;
+      filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.12));
+    }
+
+    .quail-walker img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    @keyframes quail-crossing {
+      0% {
+        transform: translateX(-22vw);
+        opacity: 0;
+      }
+      1.5% {
+        opacity: var(--quail-opacity);
+      }
+      13.5% {
+        transform: translateX(110vw);
+        opacity: var(--quail-opacity);
+      }
+      15% {
+        transform: translateX(110vw);
+        opacity: 0;
+      }
+      100% {
+        transform: translateX(110vw);
+        opacity: 0;
+      }
     }
 
     a {
@@ -639,7 +686,12 @@
 
       body::before {
         width: min(132vw, 580px);
-        bottom: -0.15rem;
+        bottom: 0.5rem;
+      }
+
+      .quail-walker {
+        width: clamp(74px, 22vw, 102px);
+        bottom: clamp(1.3rem, 4vw, 1.9rem);
       }
 
       .site-header {
@@ -689,12 +741,21 @@
       html {
         scroll-behavior: auto;
       }
+
+      .quail-walker {
+        display: none;
+        animation: none;
+      }
     }
   </style>
 </head>
 
 <body>
   <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <div class="quail-walker" aria-hidden="true">
+    <img src="assets/quail-walk.gif" alt="" />
+  </div>
 
   <div class="page">
     <header class="site-header">
