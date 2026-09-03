@@ -110,10 +110,7 @@
 
     @keyframes quail-crossing {
       0% {
-        transform: translateX(-22vw);
-        opacity: 0;
-      }
-      1.5% {
+        transform: translateX(-18vw);
         opacity: var(--quail-opacity);
       }
       54% {
@@ -754,7 +751,7 @@
   <a class="skip-link" href="#main-content">Skip to main content</a>
 
   <div class="quail-walker" aria-hidden="true">
-    <img src="assets/quail-walk.gif" alt="" />
+    <img id="quail-gif" src="assets/quail-walk.gif" data-base-src="assets/quail-walk.gif" alt="" />
   </div>
 
   <div class="page">
@@ -1124,6 +1121,18 @@
     document.getElementById("email").innerHTML =
       `<a href="mailto:${emailAddress}">${emailAddress}</a>`;
     document.getElementById("year").textContent = new Date().getFullYear();
+
+    const quailWalker = document.querySelector(".quail-walker");
+    const quailGif = document.getElementById("quail-gif");
+    if (quailWalker && quailGif) {
+      const baseSrc = quailGif.dataset.baseSrc || "assets/quail-walk.gif";
+      const restartQuailGif = () => {
+        quailGif.src = `${baseSrc}?t=${Date.now()}`;
+      };
+
+      restartQuailGif();
+      quailWalker.addEventListener("animationiteration", restartQuailGif);
+    }
   </script>
 </body>
 </html>
