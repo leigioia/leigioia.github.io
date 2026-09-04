@@ -146,7 +146,8 @@
     /*
       Animated American kestrel flying across the upper Flatirons from right to
       left. Each appearance uses a newly prepared, fully loaded GIF element.
-      Its 32.4-second crossing is twice as fast as the quail's 64.8-second one.
+      It pre-flaps just offscreen before each entrance. Its visible crossing
+      lasts about 16.2 seconds, and visible entrances remain three minutes apart.
     */
     .kestrel-flyer {
       position: fixed;
@@ -164,9 +165,14 @@
       filter: drop-shadow(0 7px 11px rgba(0, 0, 0, 0.12));
     }
 
+    .kestrel-flyer.is-preflapping {
+      visibility: visible;
+      opacity: var(--kestrel-opacity);
+    }
+
     .kestrel-flyer.is-flying {
       visibility: visible;
-      animation: kestrel-crossing 180s linear 1 both;
+      animation: kestrel-crossing 179s linear 1 both;
     }
 
     .kestrel-gif {
@@ -180,11 +186,12 @@
         transform: translateX(calc(100vw + 10%));
         opacity: var(--kestrel-opacity);
       }
-      18% {
+      /* 9.05% of 179 seconds is approximately 16.2 seconds. */
+      9.05% {
         transform: translateX(-110%);
         opacity: var(--kestrel-opacity);
       }
-      18.8% {
+      9.85% {
         transform: translateX(-110%);
         opacity: 0;
       }
@@ -1233,6 +1240,8 @@
         activeClass,
         animationName,
         firstDelayMs,
+        leadInMs = 0,
+        preStartClass = "",
         label,
       }) => {
         const actor = document.getElementById(elementId);
@@ -1283,15 +1292,28 @@
           return { image, objectUrl };
         };
 
-        const startPreparedCrossing = (preparedGif) => {
+        const startPreparedCrossing = async (preparedGif) => {
           const previousObjectUrl = activeObjectUrl;
 
           actor.classList.remove(activeClass);
+          if (preStartClass) {
+            actor.classList.remove(preStartClass);
+          }
           actor.replaceChildren(preparedGif.image);
           activeObjectUrl = preparedGif.objectUrl;
 
-          // Reset the one-shot animation, then reveal and move the prepared GIF.
+          // Keep the fully loaded GIF just offscreen for a short moment so its
+          // wing-flap cycle is already running before it becomes visible.
           void actor.offsetWidth;
+          if (preStartClass) {
+            actor.classList.add(preStartClass);
+          }
+          if (leadInMs > 0) {
+            await wait(leadInMs);
+          }
+          if (preStartClass) {
+            actor.classList.remove(preStartClass);
+          }
           actor.classList.add(activeClass);
 
           if (previousObjectUrl) {
@@ -1306,10 +1328,13 @@
 
           crossingIsStarting = true;
           actor.classList.remove(activeClass);
+          if (preStartClass) {
+            actor.classList.remove(preStartClass);
+          }
 
           try {
             const preparedGif = await prepareGifForEntrance();
-            startPreparedCrossing(preparedGif);
+            await startPreparedCrossing(preparedGif);
           } catch (error) {
             console.error(error);
           } finally {
@@ -1358,7 +1383,11 @@
         imageClass: "kestrel-gif",
         activeClass: "is-flying",
         animationName: "kestrel-crossing",
-        firstDelayMs: 60000,
+        // Begin the one-second offscreen pre-flap at 59 seconds so the
+        // kestrel becomes visible approximately 60 seconds after page load.
+        firstDelayMs: 59000,
+        leadInMs: 1000,
+        preStartClass: "is-preflapping",
         label: "American kestrel",
       });
     }
