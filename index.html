@@ -11,6 +11,7 @@
   <meta name="theme-color" content="#315f38" />
   <title>Lei Gioia Yang | Theoretical Physics</title>
   <link rel="preload" as="image" href="assets/quail-walk.gif" type="image/gif" />
+  <link rel="preload" as="image" href="assets/american-kestrel-fly.gif" type="image/gif" />
 
   <style>
     :root {
@@ -32,6 +33,9 @@
       --quail-size: clamp(84px, 8vw, 116px);
       --quail-bottom: clamp(1.9rem, 4.5vw, 3.1rem);
       --quail-opacity: 0.96;
+      --kestrel-size: clamp(76px, 7.2vw, 112px);
+      --kestrel-bottom: clamp(20rem, 42vw, 38rem);
+      --kestrel-opacity: 0.96;
     }
 
     @media (prefers-color-scheme: dark) {
@@ -134,6 +138,58 @@
       }
       100% {
         transform: translateX(calc(100vw + 10%));
+        opacity: 0;
+      }
+    }
+
+
+    /*
+      Animated American kestrel flying across the upper Flatirons from right to
+      left. Each appearance uses a newly prepared, fully loaded GIF element.
+      Its 32.4-second crossing is twice as fast as the quail's 64.8-second one.
+    */
+    .kestrel-flyer {
+      position: fixed;
+      left: 0;
+      bottom: var(--kestrel-bottom);
+      z-index: 0;
+      width: var(--kestrel-size);
+      aspect-ratio: 1 / 1;
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+      user-select: none;
+      transform: translateX(calc(100vw + 10%));
+      will-change: transform, opacity;
+      filter: drop-shadow(0 7px 11px rgba(0, 0, 0, 0.12));
+    }
+
+    .kestrel-flyer.is-flying {
+      visibility: visible;
+      animation: kestrel-crossing 180s linear 1 both;
+    }
+
+    .kestrel-gif {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    @keyframes kestrel-crossing {
+      0% {
+        transform: translateX(calc(100vw + 10%));
+        opacity: var(--kestrel-opacity);
+      }
+      18% {
+        transform: translateX(-110%);
+        opacity: var(--kestrel-opacity);
+      }
+      18.8% {
+        transform: translateX(-110%);
+        opacity: 0;
+      }
+      100% {
+        transform: translateX(-110%);
         opacity: 0;
       }
     }
@@ -702,6 +758,11 @@
         bottom: clamp(1.3rem, 4vw, 1.9rem);
       }
 
+      .kestrel-flyer {
+        width: clamp(68px, 20vw, 96px);
+        bottom: clamp(13.5rem, 64vw, 18rem);
+      }
+
       .site-header {
         align-items: flex-start;
         flex-direction: column;
@@ -751,7 +812,9 @@
       }
 
       .quail-walker,
-      .quail-walker.is-walking {
+      .quail-walker.is-walking,
+      .kestrel-flyer,
+      .kestrel-flyer.is-flying {
         display: none;
         animation: none;
       }
@@ -763,6 +826,7 @@
   <a class="skip-link" href="#main-content">Skip to main content</a>
 
   <div class="quail-walker" id="quail-walker" aria-hidden="true"></div>
+  <div class="kestrel-flyer" id="kestrel-flyer" aria-hidden="true"></div>
 
   <div class="page">
     <header class="site-header">
@@ -876,7 +940,7 @@
       </section>
 
       <section class="card content-card" id="research">
-        <h2>Current interests:</h2>
+        <h2>Research</h2>
         <ul class="research-list">
           <li>
             <strong>Many-body quantum states and Hamiltonians.</strong>
@@ -890,7 +954,7 @@
           </li>
           <li>
             <strong>Quantum many-body dynamics.</strong>
-            Quantum many-body scars, ETH theorems, quasi-local Hamiltonian from eigenstate reconstruction, parent Hamiltonians, properties of their dynamics.
+            Quantum many-body scars, ETH theorems, quasi-local Hamiltonian from eigenstate reconstruction, parent Hamiltonians, properties of scar dynamics.
           </li>
         </ul>
       </section>
@@ -1129,19 +1193,11 @@
       `<a href="mailto:${emailAddress}">${emailAddress}</a>`;
     document.getElementById("year").textContent = new Date().getFullYear();
 
-    const quailWalker = document.getElementById("quail-walker");
-    const quailGifUrl = "assets/quail-walk.gif";
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
 
-    if (
-      quailWalker &&
-      !window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    ) {
-      const FIRST_ENTRANCE_DELAY_MS = 1000;
-      let cycleNumber = 0;
-      let activeObjectUrl = null;
-      let gifBlob = null;
-      let crossingIsStarting = false;
-
+    if (!reducedMotion) {
       const wait = (milliseconds) =>
         new Promise((resolve) => window.setTimeout(resolve, milliseconds));
 
@@ -1154,126 +1210,157 @@
         }
       });
 
-      const waitForImage = (image) =>
+      const waitForImage = (image, label) =>
         new Promise((resolve, reject) => {
           image.addEventListener("load", resolve, { once: true });
           image.addEventListener(
             "error",
-            () => reject(new Error("The quail GIF could not be loaded.")),
+            () => reject(new Error(`${label} GIF could not be loaded.`)),
             { once: true }
           );
         });
 
       /*
-        The GIF is fetched once as a Blob, so all of its bytes are resident in
-        memory before any crossing. Immediately before each entrance, a fresh
-        object URL and detached <img> are loaded and decoded; inserting that new
-        element restarts GIF playback for that crossing.
+        Set up one independently timed bird crossing. The GIF bytes are fetched
+        once. Before every appearance, a fresh object URL and detached image are
+        created, loaded, and decoded. The CSS crossing starts only after that
+        new image is ready, preventing movement from beginning before playback.
       */
-      const loadGifBlob = async () => {
-        try {
-          const response = await fetch(quailGifUrl, { cache: "force-cache" });
-          if (!response.ok) {
-            throw new Error(`Unable to load quail GIF: ${response.status}`);
+      const createGifCrossing = ({
+        elementId,
+        gifUrl,
+        imageClass,
+        activeClass,
+        animationName,
+        firstDelayMs,
+        label,
+      }) => {
+        const actor = document.getElementById(elementId);
+        if (!actor) {
+          return;
+        }
+
+        let cycleNumber = 0;
+        let activeObjectUrl = null;
+        let gifBlob = null;
+        let crossingIsStarting = false;
+
+        const loadGifBlob = async () => {
+          try {
+            const response = await fetch(gifUrl, { cache: "force-cache" });
+            if (!response.ok) {
+              throw new Error(`Unable to load ${label} GIF: ${response.status}`);
+            }
+            return await response.blob();
+          } catch {
+            // Direct-URL fallback supports local-file previews where fetch is blocked.
+            return null;
           }
-          return await response.blob();
-        } catch {
-          // Direct-URL fallback supports local-file previews where fetch is blocked.
-          return null;
-        }
+        };
+
+        const prepareGifForEntrance = async () => {
+          cycleNumber += 1;
+          const image = new Image();
+          image.className = imageClass;
+          image.alt = "";
+          image.decoding = "async";
+          image.fetchPriority = "high";
+
+          const objectUrl = gifBlob ? URL.createObjectURL(gifBlob) : null;
+          const separator = gifUrl.includes("?") ? "&" : "?";
+          const source = objectUrl || `${gifUrl}${separator}cycle=${cycleNumber}`;
+
+          const imageLoaded = waitForImage(image, label);
+          image.src = source;
+          await imageLoaded;
+
+          try {
+            await image.decode();
+          } catch {
+            // The load event already establishes that the complete GIF is ready.
+          }
+
+          return { image, objectUrl };
+        };
+
+        const startPreparedCrossing = (preparedGif) => {
+          const previousObjectUrl = activeObjectUrl;
+
+          actor.classList.remove(activeClass);
+          actor.replaceChildren(preparedGif.image);
+          activeObjectUrl = preparedGif.objectUrl;
+
+          // Reset the one-shot animation, then reveal and move the prepared GIF.
+          void actor.offsetWidth;
+          actor.classList.add(activeClass);
+
+          if (previousObjectUrl) {
+            URL.revokeObjectURL(previousObjectUrl);
+          }
+        };
+
+        const beginNextCrossing = async () => {
+          if (crossingIsStarting) {
+            return;
+          }
+
+          crossingIsStarting = true;
+          actor.classList.remove(activeClass);
+
+          try {
+            const preparedGif = await prepareGifForEntrance();
+            startPreparedCrossing(preparedGif);
+          } catch (error) {
+            console.error(error);
+          } finally {
+            crossingIsStarting = false;
+          }
+        };
+
+        actor.addEventListener("animationend", (event) => {
+          if (event.target !== actor || event.animationName !== animationName) {
+            return;
+          }
+          beginNextCrossing();
+        });
+
+        const initialize = async () => {
+          const [loadedAt, loadedGifBlob] = await Promise.all([
+            pageLoadedAt,
+            loadGifBlob(),
+          ]);
+          gifBlob = loadedGifBlob;
+
+          const remainingDelay = Math.max(
+            0,
+            loadedAt + firstDelayMs - performance.now()
+          );
+          await wait(remainingDelay);
+          await beginNextCrossing();
+        };
+
+        initialize().catch((error) => console.error(error));
       };
 
-      const prepareGifForEntrance = async () => {
-        cycleNumber += 1;
-        const image = new Image();
-        image.className = "quail-gif";
-        image.alt = "";
-        image.decoding = "async";
-
-        const objectUrl = gifBlob ? URL.createObjectURL(gifBlob) : null;
-        const separator = quailGifUrl.includes("?") ? "&" : "?";
-        const source = objectUrl || `${quailGifUrl}${separator}cycle=${cycleNumber}`;
-
-        image.src = source;
-        await waitForImage(image);
-
-        try {
-          await image.decode();
-        } catch {
-          // The load event already establishes that the complete image is ready.
-        }
-
-        return { image, objectUrl };
-      };
-
-      const startPreparedCrossing = (preparedGif) => {
-        const previousObjectUrl = activeObjectUrl;
-
-        quailWalker.classList.remove("is-walking");
-        quailWalker.replaceChildren(preparedGif.image);
-        activeObjectUrl = preparedGif.objectUrl;
-
-        // Force the old one-shot animation to reset before beginning this cycle.
-        void quailWalker.offsetWidth;
-        quailWalker.classList.add("is-walking");
-
-        if (previousObjectUrl) {
-          URL.revokeObjectURL(previousObjectUrl);
-        }
-      };
-
-      /*
-        A fresh GIF is prepared immediately before every crossing. The quail
-        remains hidden until that new image has fired load and finished the
-        browser's available decode step, so the page motion can never outrun it.
-      */
-      const beginNextCrossing = async () => {
-        if (crossingIsStarting) {
-          return;
-        }
-
-        crossingIsStarting = true;
-        quailWalker.classList.remove("is-walking");
-
-        try {
-          const preparedGif = await prepareGifForEntrance();
-          startPreparedCrossing(preparedGif);
-        } catch (error) {
-          console.error(error);
-        } finally {
-          crossingIsStarting = false;
-        }
-      };
-
-      quailWalker.addEventListener("animationend", (event) => {
-        if (
-          event.target !== quailWalker ||
-          event.animationName !== "quail-crossing"
-        ) {
-          return;
-        }
-
-        beginNextCrossing();
+      createGifCrossing({
+        elementId: "quail-walker",
+        gifUrl: "assets/quail-walk.gif",
+        imageClass: "quail-gif",
+        activeClass: "is-walking",
+        animationName: "quail-crossing",
+        firstDelayMs: 1000,
+        label: "quail",
       });
 
-      const initializeQuail = async () => {
-        const [loadedAt, loadedGifBlob] = await Promise.all([
-          pageLoadedAt,
-          loadGifBlob(),
-        ]);
-        gifBlob = loadedGifBlob;
-
-        // The first entrance occurs no earlier than one second after page load.
-        const remainingDelay = Math.max(
-          0,
-          loadedAt + FIRST_ENTRANCE_DELAY_MS - performance.now()
-        );
-        await wait(remainingDelay);
-
-        await beginNextCrossing();
-      };
-
-      initializeQuail().catch((error) => console.error(error));
+      createGifCrossing({
+        elementId: "kestrel-flyer",
+        gifUrl: "assets/american-kestrel-fly.gif",
+        imageClass: "kestrel-gif",
+        activeClass: "is-flying",
+        animationName: "kestrel-crossing",
+        firstDelayMs: 60000,
+        label: "American kestrel",
+      });
     }
   </script>
 </body>
