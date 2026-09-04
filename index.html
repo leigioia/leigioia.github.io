@@ -10,6 +10,15 @@
   />
   <meta name="theme-color" content="#315f38" />
   <title>Lei Gioia Yang | Theoretical Physics</title>
+  <script>
+    try {
+      if (localStorage.getItem("lei-site-visuals") === "off") {
+        document.documentElement.classList.add("visuals-off");
+      }
+    } catch {
+      // The page still works if storage is unavailable.
+    }
+  </script>
   <link rel="preload" as="image" href="assets/quail-walk.gif" type="image/gif" />
   <link rel="preload" as="image" href="assets/american-kestrel-fly.gif" type="image/gif" />
 
@@ -89,6 +98,24 @@
       opacity: var(--landscape-opacity);
       pointer-events: none;
       user-select: none;
+    }
+
+    /* User-controlled plain-page mode: no Flatirons and no decorative motion. */
+    html.visuals-off {
+      scroll-behavior: auto;
+    }
+
+    html.visuals-off body::before {
+      display: none;
+    }
+
+    html.visuals-off .decorative-animation {
+      display: none !important;
+      animation: none !important;
+    }
+
+    html.visuals-off .page {
+      padding-bottom: 3rem;
     }
 
     /*
@@ -243,6 +270,7 @@
     .site-header {
       grid-column: 1 / -1;
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
       gap: 1.25rem;
@@ -279,6 +307,80 @@
     .site-nav a:hover,
     .site-nav a:focus-visible {
       color: var(--accent);
+    }
+
+    .site-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 0.65rem 1rem;
+    }
+
+    .visuals-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      min-height: 36px;
+      padding: 0.35rem 0.55rem 0.35rem 0.7rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--text);
+      font: inherit;
+      font-size: 0.82rem;
+      font-weight: 650;
+      cursor: pointer;
+      box-shadow: 0 5px 16px rgba(24, 51, 29, 0.05);
+      -webkit-backdrop-filter: blur(3px);
+      backdrop-filter: blur(3px);
+    }
+
+    .visuals-toggle:hover {
+      border-color: var(--accent);
+    }
+
+    .visuals-toggle:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .visuals-toggle-track {
+      position: relative;
+      flex: 0 0 auto;
+      width: 2.15rem;
+      height: 1.2rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface-soft);
+    }
+
+    .visuals-toggle-thumb {
+      position: absolute;
+      top: 50%;
+      left: 0.14rem;
+      width: 0.82rem;
+      height: 0.82rem;
+      border-radius: 50%;
+      background: var(--muted);
+      transform: translateY(-50%);
+    }
+
+    .visuals-toggle[aria-checked="true"] .visuals-toggle-track {
+      border-color: var(--accent);
+      background: var(--accent);
+    }
+
+    .visuals-toggle[aria-checked="true"] .visuals-toggle-thumb {
+      left: auto;
+      right: 0.14rem;
+      background: var(--bg);
+    }
+
+    .visuals-toggle-state {
+      min-width: 1.7rem;
+      color: var(--muted);
+      text-align: left;
     }
 
     .sidebar {
@@ -781,6 +883,12 @@
         gap: 0.35rem 0.8rem;
       }
 
+      .site-actions {
+        width: 100%;
+        justify-content: flex-start;
+        align-items: center;
+      }
+
       .profile-card {
         display: block;
       }
@@ -832,19 +940,35 @@
 <body>
   <a class="skip-link" href="#main-content">Skip to main content</a>
 
-  <div class="quail-walker" id="quail-walker" aria-hidden="true"></div>
-  <div class="kestrel-flyer" id="kestrel-flyer" aria-hidden="true"></div>
+  <div class="decorative-animation quail-walker" id="quail-walker" aria-hidden="true"></div>
+  <div class="decorative-animation kestrel-flyer" id="kestrel-flyer" aria-hidden="true"></div>
 
   <div class="page">
     <header class="site-header">
       <a class="site-title" href="#top">Lei Gioia Yang</a>
-      <nav class="site-nav" aria-label="Main navigation">
-        <a href="#about">About</a>
-        <a href="#research">Research</a>
-        <a href="#publications">Publications</a>
-        <a href="#experience">Experience</a>
-        <a href="#contact">Contact</a>
-      </nav>
+      <div class="site-actions">
+        <nav class="site-nav" aria-label="Main navigation">
+          <a href="#about">About</a>
+          <a href="#research">Research</a>
+          <a href="#publications">Publications</a>
+          <a href="#experience">Experience</a>
+          <a href="#contact">Contact</a>
+        </nav>
+        <button
+          class="visuals-toggle"
+          id="visuals-toggle"
+          type="button"
+          role="switch"
+          aria-checked="true"
+          aria-label="Turn off the Flatirons background and bird animations"
+        >
+          <span>Background &amp; birds</span>
+          <span class="visuals-toggle-track" aria-hidden="true">
+            <span class="visuals-toggle-thumb"></span>
+          </span>
+          <span class="visuals-toggle-state" id="visuals-toggle-state">On</span>
+        </button>
+      </div>
     </header>
 
     <aside class="sidebar" id="top">
@@ -1200,197 +1324,354 @@
       `<a href="mailto:${emailAddress}">${emailAddress}</a>`;
     document.getElementById("year").textContent = new Date().getFullYear();
 
-    const reducedMotion = window.matchMedia(
+    const VISUALS_STORAGE_KEY = "lei-site-visuals";
+    const root = document.documentElement;
+    const visualsToggle = document.getElementById("visuals-toggle");
+    const visualsToggleState = document.getElementById("visuals-toggle-state");
+    const reducedMotionQuery = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
-    ).matches;
+    );
 
-    if (!reducedMotion) {
-      const wait = (milliseconds) =>
-        new Promise((resolve) => window.setTimeout(resolve, milliseconds));
+    const pageLoaded = new Promise((resolve) => {
+      if (document.readyState === "complete") {
+        resolve();
+      } else {
+        window.addEventListener("load", resolve, { once: true });
+      }
+    });
 
-      const pageLoadedAt = new Promise((resolve) => {
-        const markLoaded = () => resolve(performance.now());
-        if (document.readyState === "complete") {
-          markLoaded();
-        } else {
-          window.addEventListener("load", markLoaded, { once: true });
-        }
-      });
+    const abortError = () => new DOMException("Operation aborted", "AbortError");
 
-      const waitForImage = (image, label) =>
-        new Promise((resolve, reject) => {
-          image.addEventListener("load", resolve, { once: true });
-          image.addEventListener(
-            "error",
-            () => reject(new Error(`${label} GIF could not be loaded.`)),
-            { once: true }
-          );
-        });
-
-      /*
-        Set up one independently timed bird crossing. The GIF bytes are fetched
-        once. Before every appearance, a fresh object URL and detached image are
-        created, loaded, and decoded. The CSS crossing starts only after that
-        new image is ready, preventing movement from beginning before playback.
-      */
-      const createGifCrossing = ({
-        elementId,
-        gifUrl,
-        imageClass,
-        activeClass,
-        animationName,
-        firstDelayMs,
-        leadInMs = 0,
-        preStartClass = "",
-        label,
-      }) => {
-        const actor = document.getElementById(elementId);
-        if (!actor) {
+    const wait = (milliseconds, signal) =>
+      new Promise((resolve, reject) => {
+        if (signal?.aborted) {
+          reject(abortError());
           return;
         }
 
-        let cycleNumber = 0;
-        let activeObjectUrl = null;
-        let gifBlob = null;
-        let crossingIsStarting = false;
+        const timer = window.setTimeout(() => {
+          signal?.removeEventListener("abort", handleAbort);
+          resolve();
+        }, milliseconds);
 
-        const loadGifBlob = async () => {
-          try {
-            const response = await fetch(gifUrl, { cache: "force-cache" });
-            if (!response.ok) {
-              throw new Error(`Unable to load ${label} GIF: ${response.status}`);
-            }
-            return await response.blob();
-          } catch {
-            // Direct-URL fallback supports local-file previews where fetch is blocked.
-            return null;
-          }
+        const handleAbort = () => {
+          window.clearTimeout(timer);
+          reject(abortError());
         };
 
-        const prepareGifForEntrance = async () => {
-          cycleNumber += 1;
-          const image = new Image();
-          image.className = imageClass;
-          image.alt = "";
-          image.decoding = "async";
-          image.fetchPriority = "high";
+        signal?.addEventListener("abort", handleAbort, { once: true });
+      });
 
-          const objectUrl = gifBlob ? URL.createObjectURL(gifBlob) : null;
-          const separator = gifUrl.includes("?") ? "&" : "?";
-          const source = objectUrl || `${gifUrl}${separator}cycle=${cycleNumber}`;
+    const waitForImage = (image, label, signal) =>
+      new Promise((resolve, reject) => {
+        const cleanup = () => {
+          image.removeEventListener("load", handleLoad);
+          image.removeEventListener("error", handleError);
+          signal?.removeEventListener("abort", handleAbort);
+        };
 
-          const imageLoaded = waitForImage(image, label);
+        const handleLoad = () => {
+          cleanup();
+          resolve();
+        };
+
+        const handleError = () => {
+          cleanup();
+          reject(new Error(`${label} GIF could not be loaded.`));
+        };
+
+        const handleAbort = () => {
+          cleanup();
+          image.removeAttribute("src");
+          reject(abortError());
+        };
+
+        if (signal?.aborted) {
+          handleAbort();
+          return;
+        }
+
+        image.addEventListener("load", handleLoad, { once: true });
+        image.addEventListener("error", handleError, { once: true });
+        signal?.addEventListener("abort", handleAbort, { once: true });
+      });
+
+    const waitForAnimationEnd = (element, animationName, signal) =>
+      new Promise((resolve, reject) => {
+        const cleanup = () => {
+          element.removeEventListener("animationend", handleEnd);
+          signal?.removeEventListener("abort", handleAbort);
+        };
+
+        const handleEnd = (event) => {
+          if (event.target !== element || event.animationName !== animationName) {
+            return;
+          }
+          cleanup();
+          resolve();
+        };
+
+        const handleAbort = () => {
+          cleanup();
+          reject(abortError());
+        };
+
+        if (signal?.aborted) {
+          handleAbort();
+          return;
+        }
+
+        element.addEventListener("animationend", handleEnd);
+        signal?.addEventListener("abort", handleAbort, { once: true });
+      });
+
+    /*
+      Each controller can be stopped completely. Turning the scenery off aborts
+      its pending delay, removes the active GIF, and cancels its CSS animation.
+      Turning it back on starts a fresh schedule with a freshly loaded GIF.
+    */
+    const createGifCrossing = ({
+      elementId,
+      gifUrl,
+      imageClass,
+      activeClass,
+      animationName,
+      firstDelayMs,
+      leadInMs = 0,
+      preStartClass = "",
+      label,
+    }) => {
+      const actor = document.getElementById(elementId);
+      let runController = null;
+      let activeObjectUrl = null;
+      let gifBlobPromise = null;
+      let cycleNumber = 0;
+
+      if (!actor) {
+        return { start() {}, stop() {} };
+      }
+
+      const loadGifBlob = () => {
+        if (!gifBlobPromise) {
+          gifBlobPromise = fetch(gifUrl, { cache: "force-cache" })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error(
+                  `Unable to load ${label} GIF: ${response.status}`
+                );
+              }
+              return response.blob();
+            })
+            .catch(() => null);
+        }
+        return gifBlobPromise;
+      };
+
+      const prepareGifForEntrance = async (signal) => {
+        cycleNumber += 1;
+        const gifBlob = await loadGifBlob();
+        if (signal.aborted) {
+          throw abortError();
+        }
+
+        const image = new Image();
+        image.className = imageClass;
+        image.alt = "";
+        image.decoding = "async";
+        image.fetchPriority = "high";
+
+        const objectUrl = gifBlob ? URL.createObjectURL(gifBlob) : null;
+        const separator = gifUrl.includes("?") ? "&" : "?";
+        const source = objectUrl || `${gifUrl}${separator}cycle=${cycleNumber}`;
+
+        try {
+          const imageLoaded = waitForImage(image, label, signal);
           image.src = source;
           await imageLoaded;
 
           try {
             await image.decode();
           } catch {
-            // The load event already establishes that the complete GIF is ready.
+            // A successful load event already confirms that the GIF is ready.
+          }
+
+          if (signal.aborted) {
+            throw abortError();
           }
 
           return { image, objectUrl };
-        };
+        } catch (error) {
+          if (objectUrl) {
+            URL.revokeObjectURL(objectUrl);
+          }
+          throw error;
+        }
+      };
 
-        const startPreparedCrossing = async (preparedGif) => {
-          const previousObjectUrl = activeObjectUrl;
+      const installPreparedGif = (preparedGif) => {
+        const previousObjectUrl = activeObjectUrl;
+        actor.replaceChildren(preparedGif.image);
+        activeObjectUrl = preparedGif.objectUrl;
 
+        if (previousObjectUrl) {
+          URL.revokeObjectURL(previousObjectUrl);
+        }
+      };
+
+      const clearActor = () => {
+        actor.classList.remove(activeClass);
+        if (preStartClass) {
+          actor.classList.remove(preStartClass);
+        }
+        actor.replaceChildren();
+
+        if (activeObjectUrl) {
+          URL.revokeObjectURL(activeObjectUrl);
+          activeObjectUrl = null;
+        }
+      };
+
+      const run = async (initialDelayMs, signal) => {
+        await wait(initialDelayMs, signal);
+
+        while (!signal.aborted) {
+          const preparedGif = await prepareGifForEntrance(signal);
           actor.classList.remove(activeClass);
           if (preStartClass) {
             actor.classList.remove(preStartClass);
           }
-          actor.replaceChildren(preparedGif.image);
-          activeObjectUrl = preparedGif.objectUrl;
+          installPreparedGif(preparedGif);
 
-          // Keep the fully loaded GIF just offscreen for a short moment so its
-          // wing-flap cycle is already running before it becomes visible.
+          // Force the one-shot CSS animation to restart from its first frame.
           void actor.offsetWidth;
+
           if (preStartClass) {
             actor.classList.add(preStartClass);
           }
           if (leadInMs > 0) {
-            await wait(leadInMs);
+            await wait(leadInMs, signal);
           }
           if (preStartClass) {
             actor.classList.remove(preStartClass);
           }
+
           actor.classList.add(activeClass);
-
-          if (previousObjectUrl) {
-            URL.revokeObjectURL(previousObjectUrl);
-          }
-        };
-
-        const beginNextCrossing = async () => {
-          if (crossingIsStarting) {
-            return;
-          }
-
-          crossingIsStarting = true;
+          await waitForAnimationEnd(actor, animationName, signal);
           actor.classList.remove(activeClass);
-          if (preStartClass) {
-            actor.classList.remove(preStartClass);
-          }
-
-          try {
-            const preparedGif = await prepareGifForEntrance();
-            await startPreparedCrossing(preparedGif);
-          } catch (error) {
-            console.error(error);
-          } finally {
-            crossingIsStarting = false;
-          }
-        };
-
-        actor.addEventListener("animationend", (event) => {
-          if (event.target !== actor || event.animationName !== animationName) {
-            return;
-          }
-          beginNextCrossing();
-        });
-
-        const initialize = async () => {
-          const [loadedAt, loadedGifBlob] = await Promise.all([
-            pageLoadedAt,
-            loadGifBlob(),
-          ]);
-          gifBlob = loadedGifBlob;
-
-          const remainingDelay = Math.max(
-            0,
-            loadedAt + firstDelayMs - performance.now()
-          );
-          await wait(remainingDelay);
-          await beginNextCrossing();
-        };
-
-        initialize().catch((error) => console.error(error));
+        }
       };
 
-      createGifCrossing({
-        elementId: "quail-walker",
-        gifUrl: "assets/quail-walk.gif",
-        imageClass: "quail-gif",
-        activeClass: "is-walking",
-        animationName: "quail-crossing",
-        firstDelayMs: 1000,
-        label: "quail",
-      });
+      return {
+        start(delayMs = firstDelayMs) {
+          this.stop();
+          runController = new AbortController();
+          run(delayMs, runController.signal).catch((error) => {
+            if (error.name !== "AbortError") {
+              console.error(error);
+            }
+          });
+        },
 
-      createGifCrossing({
-        elementId: "kestrel-flyer",
-        gifUrl: "assets/american-kestrel-fly.gif",
-        imageClass: "kestrel-gif",
-        activeClass: "is-flying",
-        animationName: "kestrel-crossing",
-        // Begin the one-second offscreen pre-flap at 59 seconds so the
-        // kestrel becomes visible approximately 60 seconds after page load.
-        firstDelayMs: 59000,
-        leadInMs: 1000,
-        preStartClass: "is-preflapping",
-        label: "American kestrel",
-      });
+        stop() {
+          runController?.abort();
+          runController = null;
+          clearActor();
+        },
+      };
+    };
+
+    const quailController = createGifCrossing({
+      elementId: "quail-walker",
+      gifUrl: "assets/quail-walk.gif",
+      imageClass: "quail-gif",
+      activeClass: "is-walking",
+      animationName: "quail-crossing",
+      firstDelayMs: 1000,
+      label: "quail",
+    });
+
+    const kestrelController = createGifCrossing({
+      elementId: "kestrel-flyer",
+      gifUrl: "assets/american-kestrel-fly.gif",
+      imageClass: "kestrel-gif",
+      activeClass: "is-flying",
+      animationName: "kestrel-crossing",
+      // The one-second offscreen pre-flap starts at 59 seconds so the kestrel
+      // becomes visible approximately 60 seconds after the schedule starts.
+      firstDelayMs: 59000,
+      leadInMs: 1000,
+      preStartClass: "is-preflapping",
+      label: "American kestrel",
+    });
+
+    const birdControllers = [quailController, kestrelController];
+    let pageIsLoaded = false;
+
+    const updateToggle = (enabled) => {
+      visualsToggle.setAttribute("aria-checked", String(enabled));
+      visualsToggleState.textContent = enabled ? "On" : "Off";
+      const action = enabled ? "off" : "on";
+      const description = `Turn ${action} the Flatirons background and bird animations`;
+      visualsToggle.setAttribute("aria-label", description);
+      visualsToggle.title = description;
+    };
+
+    const stopBirds = () => {
+      birdControllers.forEach((controller) => controller.stop());
+    };
+
+    const startBirds = () => {
+      stopBirds();
+      if (
+        root.classList.contains("visuals-off") ||
+        reducedMotionQuery.matches ||
+        !pageIsLoaded
+      ) {
+        return;
+      }
+
+      quailController.start();
+      kestrelController.start();
+    };
+
+    const setVisualsEnabled = (enabled, persist = true) => {
+      root.classList.toggle("visuals-off", !enabled);
+      updateToggle(enabled);
+
+      if (persist) {
+        try {
+          localStorage.setItem(VISUALS_STORAGE_KEY, enabled ? "on" : "off");
+        } catch {
+          // The preference remains active for this page if storage is blocked.
+        }
+      }
+
+      if (enabled) {
+        startBirds();
+      } else {
+        stopBirds();
+      }
+    };
+
+    const initialVisualsEnabled = !root.classList.contains("visuals-off");
+    updateToggle(initialVisualsEnabled);
+
+    visualsToggle.addEventListener("click", () => {
+      const enabled = root.classList.contains("visuals-off");
+      setVisualsEnabled(enabled);
+    });
+
+    const handleReducedMotionChange = () => startBirds();
+    if (typeof reducedMotionQuery.addEventListener === "function") {
+      reducedMotionQuery.addEventListener("change", handleReducedMotionChange);
+    } else {
+      reducedMotionQuery.addListener(handleReducedMotionChange);
     }
+
+    pageLoaded.then(() => {
+      pageIsLoaded = true;
+      startBirds();
+    });
   </script>
 </body>
 </html>
