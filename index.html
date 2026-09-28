@@ -20,7 +20,7 @@
     }
   </script>
   <link rel="preload" as="image" href="assets/quail-walk.gif" type="image/gif" />
-  <link rel="preload" as="image" href="assets/american-kestrel-fly.gif" type="image/gif" />
+  <link rel="preload" as="image" href="assets/american-kestrel-flap-sprite.png" type="image/png" />
 
   <style>
     :root {
@@ -172,9 +172,9 @@
 
     /*
       Animated American kestrel flying across the upper Flatirons from right to
-      left. Each appearance uses a newly prepared, fully loaded GIF element.
-      It pre-flaps just offscreen before each entrance. Its visible crossing
-      lasts about 16.2 seconds, and visible entrances remain three minutes apart.
+      left. The eight source frames are stored in a PNG sprite sheet and the
+      wing cycle is driven by CSS rather than by browser GIF playback. This
+      avoids animated-GIF throttling while the bird is just outside the viewport.
     */
     .kestrel-flyer {
       position: fixed;
@@ -183,6 +183,7 @@
       z-index: 0;
       width: var(--kestrel-size);
       aspect-ratio: 1 / 1;
+      overflow: hidden;
       visibility: hidden;
       opacity: 0;
       pointer-events: none;
@@ -192,39 +193,47 @@
       filter: drop-shadow(0 7px 11px rgba(0, 0, 0, 0.12));
     }
 
+    /* The sprite is visible to the renderer but remains outside the viewport. */
     .kestrel-flyer.is-preflapping {
       visibility: visible;
-      opacity: var(--kestrel-opacity);
+      opacity: 0;
     }
 
     .kestrel-flyer.is-flying {
       visibility: visible;
-      animation: kestrel-crossing 179s linear 1 both;
+      animation: kestrel-crossing 16.2s linear 1 both;
     }
 
-    .kestrel-gif {
+    .kestrel-sprite {
       display: block;
-      width: 100%;
-      height: auto;
+      width: 800%;
+      max-width: none;
+      height: 100%;
+      transform: translateX(0);
+      will-change: transform;
+    }
+
+    .kestrel-flyer.is-flapping .kestrel-sprite {
+      animation: kestrel-flap 720ms steps(8, end) infinite;
+    }
+
+    @keyframes kestrel-flap {
+      from {
+        transform: translateX(0);
+      }
+      to {
+        transform: translateX(-100%);
+      }
     }
 
     @keyframes kestrel-crossing {
-      0% {
+      from {
         transform: translateX(calc(100vw + 10%));
         opacity: var(--kestrel-opacity);
       }
-      /* 9.05% of 179 seconds is approximately 16.2 seconds. */
-      9.05% {
+      to {
         transform: translateX(-110%);
         opacity: var(--kestrel-opacity);
-      }
-      9.85% {
-        transform: translateX(-110%);
-        opacity: 0;
-      }
-      100% {
-        transform: translateX(-110%);
-        opacity: 0;
       }
     }
 
@@ -1094,7 +1103,7 @@
         <h2>Publications</h2>
         <p class="publication-note">
           Publications are listed in reverse chronological order. I publish under the
-          name <strong>Lei Gioia</strong>. Status information below follows my August 2026 CV.
+          name <strong>Lei Gioia</strong>. Information below follows my October 2026 CV.
         </p>
 
         <h3>Published or accepted</h3>
@@ -1193,6 +1202,16 @@
         <details open>
           <summary>Preprints</summary>
           <ol class="publication-list" style="margin-top: 1rem">
+            <li class="publication">
+              <p class="publication-title">
+                <a href="https://arxiv.org/abs/2609.30363">
+                  Disentangling the Toric Code
+                </a>
+              </p>
+              <p class="authors"><span class="me">Lei Gioia</span>, Salvatore D. Pace, Ruben Verresen, Shu-Heng Shao, and Ryan Thorngren</p>
+              <p class="venue">arXiv:2609.30363 (2026)</p>
+            </li>
+
             <li class="publication">
               <p class="publication-title">
                 <a href="https://arxiv.org/abs/2605.15200">
@@ -1377,7 +1396,7 @@
 
         const handleError = () => {
           cleanup();
-          reject(new Error(`${label} GIF could not be loaded.`));
+          reject(new Error(`${label} image could not be loaded.`));
         };
 
         const handleAbort = () => {
@@ -1580,6 +1599,114 @@
       };
     };
 
+    /*
+      A CSS-sprite controller is used for the kestrel. Unlike an animated GIF,
+      the flap animation advances on the CSS animation timeline even while the
+      actor is just outside the viewport. The sprite is fully loaded first, then
+      flaps invisibly for one second before every visible crossing.
+    */
+    const createSpriteCrossing = ({
+      elementId,
+      spriteUrl,
+      imageClass,
+      flapClass,
+      preStartClass,
+      activeClass,
+      animationName,
+      firstVisibleDelayMs,
+      intervalMs,
+      leadInMs,
+      label,
+    }) => {
+      const actor = document.getElementById(elementId);
+      let runController = null;
+
+      if (!actor) {
+        return { start() {}, stop() {} };
+      }
+
+      const prepareSprite = async (signal) => {
+        const image = new Image();
+        image.className = imageClass;
+        image.alt = "";
+        image.decoding = "async";
+        image.fetchPriority = "high";
+
+        const imageLoaded = waitForImage(image, label, signal);
+        image.src = spriteUrl;
+        await imageLoaded;
+
+        try {
+          await image.decode();
+        } catch {
+          // A successful load event already confirms that the sprite is ready.
+        }
+
+        if (signal.aborted) {
+          throw abortError();
+        }
+
+        return image;
+      };
+
+      const clearActor = () => {
+        actor.classList.remove(activeClass, flapClass, preStartClass);
+        actor.replaceChildren();
+      };
+
+      const run = async (initialVisibleDelayMs, signal) => {
+        const scheduleStartedAt = performance.now();
+        const spritePromise = prepareSprite(signal);
+        let nextVisibleAt = scheduleStartedAt + initialVisibleDelayMs;
+
+        const sprite = await spritePromise;
+        actor.replaceChildren(sprite);
+
+        while (!signal.aborted) {
+          const preFlapAt = nextVisibleAt - leadInMs;
+          await wait(Math.max(0, preFlapAt - performance.now()), signal);
+
+          actor.classList.remove(activeClass, flapClass, preStartClass);
+          void actor.offsetWidth;
+          actor.classList.add(preStartClass, flapClass);
+
+          // Guarantee a complete lead-in even if asset loading or a suspended
+          // browser tab caused the scheduled pre-flap time to be missed.
+          const visibleAt = Math.max(nextVisibleAt, performance.now() + leadInMs);
+          await wait(Math.max(0, visibleAt - performance.now()), signal);
+
+          actor.classList.remove(preStartClass);
+          actor.classList.add(activeClass);
+          const visibleStartedAt = performance.now();
+
+          await waitForAnimationEnd(actor, animationName, signal);
+          actor.classList.remove(activeClass, flapClass);
+
+          // Measure the three-minute interval from the actual visible entrance,
+          // avoiding cumulative drift after a delayed or suspended browser tab.
+          nextVisibleAt = visibleStartedAt + intervalMs;
+        }
+      };
+
+      return {
+        start(delayMs = firstVisibleDelayMs) {
+          this.stop();
+          runController = new AbortController();
+          run(delayMs, runController.signal).catch((error) => {
+            if (error.name !== "AbortError") {
+              console.error(error);
+            }
+          });
+        },
+
+        stop() {
+          runController?.abort();
+          runController = null;
+          clearActor();
+        },
+      };
+    };
+
     const quailController = createGifCrossing({
       elementId: "quail-walker",
       gifUrl: "assets/quail-walk.gif",
@@ -1590,18 +1717,18 @@
       label: "quail",
     });
 
-    const kestrelController = createGifCrossing({
+    const kestrelController = createSpriteCrossing({
       elementId: "kestrel-flyer",
-      gifUrl: "assets/american-kestrel-fly.gif",
-      imageClass: "kestrel-gif",
+      spriteUrl: "assets/american-kestrel-flap-sprite.png",
+      imageClass: "kestrel-sprite",
+      flapClass: "is-flapping",
+      preStartClass: "is-preflapping",
       activeClass: "is-flying",
       animationName: "kestrel-crossing",
-      // The one-second offscreen pre-flap starts at 59 seconds so the kestrel
-      // becomes visible approximately 60 seconds after the schedule starts.
-      firstDelayMs: 59000,
+      firstVisibleDelayMs: 60000,
+      intervalMs: 180000,
       leadInMs: 1000,
-      preStartClass: "is-preflapping",
-      label: "American kestrel",
+      label: "American kestrel sprite",
     });
 
     const birdControllers = [quailController, kestrelController];
