@@ -665,6 +665,118 @@
       margin-bottom: 0;
     }
 
+    .recent-work-intro {
+      max-width: 64ch;
+      margin-bottom: 1.25rem;
+      color: var(--muted);
+    }
+
+    .recent-work-list {
+      display: grid;
+      gap: 1.15rem;
+    }
+
+    .recent-work-item {
+      display: grid;
+      grid-template-columns: minmax(170px, 215px) minmax(0, 1fr);
+      gap: clamp(1rem, 3vw, 1.5rem);
+      align-items: center;
+      padding: clamp(0.9rem, 2.3vw, 1.15rem);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--surface-soft);
+    }
+
+    .recent-work-item.image-right {
+      grid-template-columns: minmax(0, 1fr) minmax(170px, 215px);
+    }
+
+    .recent-work-item.image-right .recent-work-figure-link {
+      order: 2;
+    }
+
+    .recent-work-item.image-right .recent-work-copy {
+      order: 1;
+    }
+
+    .recent-work-figure-link {
+      display: block;
+      border-radius: 18px;
+      text-decoration: none;
+    }
+
+    .recent-work-figure-link:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 4px;
+    }
+
+    .recent-work-figure {
+      width: 100%;
+      aspect-ratio: 1;
+      margin: 0;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: #eef4ef;
+      box-shadow: 0 8px 22px rgba(24, 51, 29, 0.08);
+    }
+
+    .recent-work-figure img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .recent-work-copy {
+      min-width: 0;
+    }
+
+    .recent-work-copy h3 {
+      margin: 0 0 0.45rem;
+      font-size: clamp(1.08rem, 2vw, 1.25rem);
+    }
+
+    .recent-work-copy h3 a {
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .recent-work-copy h3 a:hover,
+    .recent-work-copy h3 a:focus-visible {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+
+    .recent-work-kicker {
+      margin-bottom: 0.35rem;
+      color: var(--accent);
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .recent-work-copy p {
+      margin-bottom: 0.8rem;
+    }
+
+    .recent-work-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem 0.85rem;
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .recent-work-links a {
+      text-decoration: none;
+    }
+
+    .recent-work-links a::after {
+      content: " →";
+    }
+
     .publication-note {
       margin-bottom: 1.15rem;
       padding: 0.8rem 0.95rem;
@@ -925,6 +1037,23 @@
         grid-template-columns: 62px minmax(0, 1fr);
       }
 
+      .recent-work-item,
+      .recent-work-item.image-right {
+        grid-template-columns: 1fr;
+      }
+
+      .recent-work-item .recent-work-figure-link,
+      .recent-work-item.image-right .recent-work-figure-link {
+        width: min(190px, 72vw);
+        justify-self: center;
+        order: 0;
+      }
+
+      .recent-work-item .recent-work-copy,
+      .recent-work-item.image-right .recent-work-copy {
+        order: 1;
+      }
+
       .publication {
         padding-left: 2rem;
       }
@@ -959,6 +1088,7 @@
         <nav class="site-nav" aria-label="Main navigation">
           <a href="#about">About</a>
           <a href="#research">Research</a>
+          <a href="#recent-work">Recent work</a>
           <a href="#publications">Publications</a>
           <a href="#experience">Experience</a>
           <a href="#contact">Contact</a>
@@ -1097,6 +1227,141 @@
             Quantum many-body scars, ETH theorems, quasi-local Hamiltonian from eigenstate reconstruction, parent Hamiltonians, properties of scar dynamics.
           </li>
         </ul>
+      </section>
+
+      <section class="card content-card" id="recent-work">
+        <h2>Recent work</h2>
+        <p class="recent-work-intro">
+          A selection of recent projects on topological order, symmetry-enforced
+          entanglement, many-body scars, and chiral lattice fermions.
+        </p>
+
+        <div class="recent-work-list">
+          <article class="recent-work-item">
+            <a
+              class="recent-work-figure-link"
+              href="https://arxiv.org/abs/2609.30363"
+              aria-label="Read Disentangling the Toric Code"
+            >
+              <figure class="recent-work-figure">
+                <img
+                  src="assets/recent-work/toric-code.png"
+                  alt="Toric code illustration showing e and m loops combining into an f loop"
+                />
+              </figure>
+            </a>
+            <div class="recent-work-copy">
+              <div class="recent-work-kicker">2026 · Preprint</div>
+              <h3><a href="https://arxiv.org/abs/2609.30363">Disentangling the Toric Code</a></h3>
+              <p>
+                Commuting-projector Hamiltonians such as the Ising ferromagnet and
+                toric code generate non-on-site U(1) symmetries. We show that
+                fractionalized excitations obstruct making these symmetries on-site
+                with finite-dimensional ancillas, while rotor ancillas permit explicit
+                disentangling constructions.
+              </p>
+              <div class="recent-work-links">
+                <a href="https://arxiv.org/abs/2609.30363">Read the preprint</a>
+                <a href="https://www.youtube.com/watch?v=tgDN-35IcKo&t=3788s">Watch the talk</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="recent-work-item image-right">
+            <a
+              class="recent-work-figure-link"
+              href="https://arxiv.org/abs/2605.15200"
+              aria-label="Read Translation symmetry-enforced long-range entanglement in mixed states"
+            >
+              <figure class="recent-work-figure">
+                <img
+                  src="assets/recent-work/mixed-translation.png"
+                  alt="Translation-symmetry illustration with vertical chains and highlighted central region"
+                />
+              </figure>
+            </a>
+            <div class="recent-work-copy">
+              <div class="recent-work-kicker">2026 · Preprint</div>
+              <h3>
+                <a href="https://arxiv.org/abs/2605.15200">
+                  Translation symmetry-enforced long-range entanglement in mixed states
+                </a>
+              </h3>
+              <p>
+                Translation-symmetric short-range-entangled eigenstates exist, but
+                there are too few to span the zero-momentum sector. Consequently, a
+                natural mixed state associated with strong-to-weak translation-symmetry
+                breaking is long-range entangled even though ordinary connected
+                correlations do not detect it.
+              </p>
+              <div class="recent-work-links">
+                <a href="https://arxiv.org/abs/2605.15200">Read the preprint</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="recent-work-item">
+            <a
+              class="recent-work-figure-link"
+              href="https://arxiv.org/abs/2601.14206"
+              aria-label="Read work on locality and parent Hamiltonians for many-body scars"
+            >
+              <figure class="recent-work-figure">
+                <img
+                  src="assets/recent-work/scar-towers.png"
+                  alt="Heatmap illustration for many-body scar dynamics"
+                />
+              </figure>
+            </a>
+            <div class="recent-work-copy">
+              <div class="recent-work-kicker">2025–2026 · Two preprints</div>
+              <h3>Locality and parent Hamiltonians for many-body scars</h3>
+              <p>
+                These two works use <em>W</em> and Dicke states to expose how locality
+                constrains parent Hamiltonians for exact scar states. We classify
+                distinct local parent-Hamiltonian structures and show that a complete
+                Dicke scar tower must be equally spaced in energy, with correspondingly
+                frozen entanglement dynamics within the tower.
+              </p>
+              <div class="recent-work-links">
+                <a href="https://arxiv.org/abs/2601.14206">Scar-tower spacing</a>
+                <a href="https://arxiv.org/abs/2510.24713"><em>W</em>-state parent Hamiltonians</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="recent-work-item image-right">
+            <a
+              class="recent-work-figure-link"
+              href="https://journals.aps.org/prl/abstract/10.1103/s5q2-317m"
+              aria-label="Read Exact Chiral Symmetries of 3+1D Hamiltonian Lattice Fermions"
+            >
+              <figure class="recent-work-figure">
+                <img
+                  src="assets/recent-work/chiral-fermions.png"
+                  alt="Three-dimensional Dirac or Weyl cone illustration"
+                />
+              </figure>
+            </a>
+            <div class="recent-work-copy">
+              <div class="recent-work-kicker">2026 · Physical Review Letters</div>
+              <h3>
+                <a href="https://journals.aps.org/prl/abstract/10.1103/s5q2-317m">
+                  Exact Chiral Symmetries of 3+1D Hamiltonian Lattice Fermions
+                </a>
+              </h3>
+              <p>
+                We construct lattice Hamiltonians for a single Weyl fermion and a Weyl
+                doublet with exact chiral symmetries. The essential ingredient is an
+                exact but non-on-site symmetry, which evades standard no-go theorems
+                while retaining the associated chiral and global anomalies.
+              </p>
+              <div class="recent-work-links">
+                <a href="https://journals.aps.org/prl/abstract/10.1103/s5q2-317m">Read the paper</a>
+              </div>
+            </div>
+          </article>
+        </div>
       </section>
 
       <section class="card content-card" id="publications">
@@ -1282,8 +1547,9 @@
         </div>
 
         <details>
-          <summary>Recent invited and workshop presentations</summary>
+          <summary>Recent presentations</summary>
           <ul class="timeline" style="margin-top: 0.75rem">
+            <li><time>2026</time><span>“<a href="https://www.youtube.com/watch?v=tgDN-35IcKo&t=3788s">Disentangling the Toric Code</a>,” National University of Singapore condensed matter seminar</span></li>
             <li><time>2026</time><span>“Exact Chiral Symmetries of 3+1D Hamiltonian Lattice Fermions,” YITP: Frontiers of Lattice Fermions, Kyoto University</span></li>
             <li><time>2026</time><span>“Renormalization, symmetries, and anomalies: Organizing principles for entangled quantum matter,” Tufts University physics colloquium</span></li>
             <li><time>2026</time><span>“A window into quantum matter: the renormalization group view,” New York University physics colloquium</span></li>
